@@ -72,6 +72,19 @@ if sap_model:
 
 Si prefieres marcar casillas y elegir la carpeta de salida con un selector, puedes abrir una ventana básica con `lanzar_gui_etabs()`. La interfaz intentará conectarse a ETABS automáticamente; si ya tienes un `SapModel` lo puedes pasar como argumento, pero no es obligatorio. Desde la ventana puedes consultar las tablas disponibles, marcarlas, escoger CSV/TXT y la carpeta de exportación. Es un prototipo que puedes ejecutar en paralelo y luego integrar al flujo principal.
 
+### Prueba rápida en consola
+
+Para confirmar que la conexión y la extracción funcionan en tu entorno, ejecuta el script `prueba_extraccion.py`. El programa se conectará a ETABS, listará las primeras tablas disponibles y tratará de leerlas, mostrando en consola las primeras filas o la carpeta donde se guardaron los archivos.
+
+```bash
+python prueba_extraccion.py \
+  --tablas "Story Forces" "Diaphragm Accelerations" "Story Drifts" \
+  --salida ./salidas_etabs \
+  --formatos csv txt
+```
+
+Si omites `--salida`, la prueba imprimirá un resumen en pantalla sin generar archivos.
+
 ### ¿Cómo elegir desde un listado sin menú?
 
 A continuación un ejemplo sencillo para que el usuario seleccione por consola a partir del catálogo disponible. No crea un menú gráfico, pero sirve para escoger interactívamente y luego pasar los nombres exactos al extractor:
