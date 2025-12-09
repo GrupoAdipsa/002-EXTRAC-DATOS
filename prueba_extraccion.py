@@ -66,9 +66,7 @@ def probar_extraccion(
     try:
         disponibles = listar_tablas_etabs(sap_model)
     except Exception as exc:  # pragma: no cover - interacción COM
-        causa = exc.__cause__
-        detalle = f" Detalle: {causa}" if causa else ""
-        print(f"❌ Error al listar tablas: {exc}.{detalle}")
+        print(f"❌ Error al listar tablas: {exc}")
         return
 
     print(f"Se encontraron {len(disponibles)} tablas disponibles.")

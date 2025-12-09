@@ -51,20 +51,6 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
             "No se pudieron listar las tablas disponibles desde ETABS."
         ) from exc
 
-    if not isinstance(resultado, tuple):
-        raise RuntimeError(
-            "ETABS devolvió un formato inesperado al listar las tablas disponibles."
-        )
-
-    if len(resultado) == 3:
-        ret, _table_keys, table_names = resultado
-    elif len(resultado) >= 4:
-        ret, _table_keys, table_names, *_ = resultado
-    else:
-        raise RuntimeError(
-            "ETABS devolvió un número insuficiente de valores al listar las tablas."
-        )
-
     if ret != 0:
         raise RuntimeError(
             f"ETABS devolvió el código {ret} al solicitar el listado de tablas."
