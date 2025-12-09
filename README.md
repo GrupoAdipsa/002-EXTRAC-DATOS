@@ -70,7 +70,7 @@ if sap_model:
 
 ### Vista gráfica opcional
 
-Si prefieres marcar casillas y elegir la carpeta de salida con un selector, puedes abrir una ventana básica con `lanzar_gui_etabs(sap_model)`. La interfaz mostrará el catálogo de tablas disponibles, permitirá marcar las deseadas y escoger si quieres CSV, TXT o ambos, además de la ruta de exportación. Es un prototipo que puedes ejecutar en paralelo y luego integrar al flujo principal.
+Si prefieres marcar casillas y elegir la carpeta de salida con un selector, puedes abrir una ventana básica con `lanzar_gui_etabs()`. La interfaz intentará conectarse a ETABS automáticamente; si ya tienes un `SapModel` lo puedes pasar como argumento, pero no es obligatorio. Desde la ventana puedes consultar las tablas disponibles, marcarlas, escoger CSV/TXT y la carpeta de exportación. Es un prototipo que puedes ejecutar en paralelo y luego integrar al flujo principal.
 
 ### ¿Cómo elegir desde un listado sin menú?
 

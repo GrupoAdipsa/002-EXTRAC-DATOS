@@ -17,6 +17,7 @@ from __future__ import annotations
 from pathlib import Path
 from tkinter import BOTH, END, LEFT, RIGHT, TOP, Button, Checkbutton, Entry, Frame, IntVar, Label, StringVar, Tk, ttk, filedialog, messagebox
 
+from conectar_etabs import obtener_sapmodel_etabs
 from tablas_etabs import DEFAULT_TABLES, extraer_tablas_etabs, listar_tablas_etabs
 
 __all__ = ["lanzar_gui_etabs"]
@@ -71,6 +72,7 @@ class _ExtractorGUI:
 
         botones_tablas = Frame(self.root)
         botones_tablas.pack(pady=5, padx=10, anchor="e")
+        Button(botones_tablas, text="Conectar a ETABS", command=self._reconectar).pack(side=LEFT, padx=5)
         Button(botones_tablas, text="Actualizar", command=self._cargar_tablas_disponibles).pack(side=LEFT, padx=5)
         Button(botones_tablas, text="Seleccionar predeterminadas", command=self._seleccionar_default).pack(side=LEFT, padx=5)
 
@@ -92,10 +94,27 @@ class _ExtractorGUI:
         Button(frame_acciones, text="Extraer", command=self._extraer).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Cerrar", command=self.root.destroy).pack(side=LEFT, padx=10)
 
+    def _asegurar_sapmodel(self) -> bool:
+        if self.sap_model:
+            return True
+
+        self.sap_model = obtener_sapmodel_etabs()
+        if not self.sap_model:
+            messagebox.showwarning(
+                "SapModel no disponible",
+                "No se pudo conectar a ETABS. Abre un modelo y vuelve a intentarlo.",
+            )
+            return False
+
+        return True
+
     def _cargar_tablas_disponibles(self) -> None:
         for item in self.lista_tablas.get_children():
             self.lista_tablas.delete(item)
         self._tabla_vars.clear()
+
+        if not self._asegurar_sapmodel():
+            return
 
         try:
             tablas = listar_tablas_etabs(self.sap_model)
@@ -115,6 +134,11 @@ class _ExtractorGUI:
             self._tabla_vars.append((tabla, var))
             self.lista_tablas.insert("", END, values=(f"[ ] {tabla}",), tags=(tabla,))
             self.lista_tablas.tag_bind(tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t))
+
+    def _reconectar(self) -> None:
+        self.sap_model = None
+        if self._asegurar_sapmodel():
+            self._cargar_tablas_disponibles()
 
     def _toggle_tabla(self, var: IntVar, tabla: str) -> None:
         var.set(0 if var.get() else 1)
@@ -145,6 +169,9 @@ class _ExtractorGUI:
             self._ruta_destino.set(carpeta)
 
     def _extraer(self) -> None:
+        if not self._asegurar_sapmodel():
+            return
+
         seleccionadas = [tabla for tabla, var in self._tabla_vars if var.get()]
         if not seleccionadas:
             usar_default = messagebox.askyesno(
@@ -207,17 +234,11 @@ def lanzar_gui_etabs(sap_model) -> None:
 
 
 if __name__ == "__main__":  # pragma: no cover - uso interactivo
-    try:
-        from conectar_etabs import obtener_sapmodel_etabs
-
-        sap = obtener_sapmodel_etabs()
-    except Exception as exc:  # pragma: no cover - dependencias externas
-        messagebox.showerror("Error", f"No se pudo conectar a ETABS: {exc}")
+    sap = obtener_sapmodel_etabs()
+    if sap:
+        lanzar_gui_etabs(sap)
     else:
-        if sap:
-            lanzar_gui_etabs(sap)
-        else:
-            messagebox.showwarning(
-                "SapModel no disponible",
-                "No se pudo obtener SapModel. Abre un modelo en ETABS y vuelve a intentarlo.",
-            )
+        messagebox.showwarning(
+            "SapModel no disponible",
+            "No se pudo obtener SapModel. Abre un modelo en ETABS y vuelve a intentarlo.",
+        )
