@@ -45,7 +45,7 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
         raise ValueError("SapModel no puede ser None. Conecta primero con ETABS.")
 
     try:
-        ret, _table_keys, table_names = sap_model.DatabaseTables.GetAvailableTables()
+        resultado = sap_model.DatabaseTables.GetAvailableTables()
     except Exception as exc:  # pragma: no cover - interacción directa con COM
         raise RuntimeError(
             "No se pudieron listar las tablas disponibles desde ETABS."
