@@ -85,6 +85,9 @@ def extraer_tablas_etabs(
     tablas: Iterable[str] | None = None,
     carpeta_destino: str | Path | None = None,
     formatos: str | Iterable[str] = "csv",
+    casos: Iterable[str] | None = None,
+    combinaciones: Iterable[str] | None = None,
+    debug_log: bool = False,
 ):
     """Extrae tablas seleccionadas de un modelo abierto de ETABS.
 
@@ -133,9 +136,71 @@ def extraer_tablas_etabs(
         destino = Path(carpeta_destino)
         destino.mkdir(parents=True, exist_ok=True)
         formatos_normalizados = _normalizar_formatos(formatos)
+    debug_dir = destino or Path.cwd()
 
     db_tables = sap_model.DatabaseTables
     resultados: dict[str, pd.DataFrame] = {}
+
+    # Selección de casos/combinaciones si se solicita
+    casos_lista = list(casos or [])
+    combos_lista = list(combinaciones or [])
+
+    if casos_lista or combos_lista:
+        try:
+            setup = sap_model.Results.Setup
+            try:
+                setup.DeselectAllCasesAndCombosForOutput()
+            except Exception:
+                # Si falla, seguimos e intentamos seleccionar igualmente.
+                pass
+
+            errores_sel: list[str] = []
+            for nombre in casos_lista:
+                try:
+                    ret_sel = setup.SetCaseSelectedForOutput(nombre, True)
+                except Exception as exc_case:
+                    errores_sel.append(f"case '{nombre}': {exc_case}")
+                else:
+                    if ret_sel != 0:
+                        errores_sel.append(f"case '{nombre}' ret={ret_sel}")
+
+            for nombre in combos_lista:
+                try:
+                    ret_sel = setup.SetComboSelectedForOutput(nombre, True)
+                except Exception as exc_combo:
+                    errores_sel.append(f"combo '{nombre}': {exc_combo}")
+                else:
+                    if ret_sel != 0:
+                        errores_sel.append(f"combo '{nombre}' ret={ret_sel}")
+
+            casos_sel = _leer_seleccion_output(setup, "GetSelectedCasesForOutput")
+            combos_sel = _leer_seleccion_output(setup, "GetSelectedCombosForOutput")
+
+            if debug_log:
+                _escribir_debug_tabla(
+                    debug_dir,
+                    "seleccion_resultados",
+                    resultado_completo=("seleccion",),
+                    headings_raw="seleccion",
+                    data_raw=[],
+                    motivo=(
+                        f"Solicitados casos={casos_lista}, combos={combos_lista}; "
+                        f"Seleccionados casos={casos_sel}, combos={combos_sel}; "
+                        f"Errores: {', '.join(errores_sel) if errores_sel else 'ninguno'}"
+                    ),
+                )
+
+        except Exception as exc:  # pragma: no cover - depende de COM
+            # No detenemos la extracción; log y seguimos con la selección actual de ETABS
+            if debug_log:
+                _escribir_debug_tabla(
+                    debug_dir,
+                    "seleccion_resultados_error",
+                    resultado_completo=("seleccion_error",),
+                    headings_raw="seleccion_error",
+                    data_raw=[],
+                    motivo=f"Fallo seleccionando casos/combos: {exc}",
+                )
 
     for nombre_tabla in tablas_a_extraer:
         tabla_destino = _resolver_tabla(nombre_tabla, tablas_disponibles)
@@ -147,41 +212,153 @@ def extraer_tablas_etabs(
             # Si falla la selección, seguimos e intentamos la lectura directa.
             pass
 
-        try:
-            (
-                ret,
-                headings,
-                data,
-                _table_version,
-                _,
-                __,
-                ___,
-            ) = db_tables.GetTableForDisplayArray(tabla_destino.key)
-        except Exception as exc:  # pragma: no cover - interacción directa con COM
-            raise RuntimeError(
-                f"No se pudo leer la tabla '{tabla_destino.nombre}' desde ETABS: {exc}"
-            ) from exc
+        ultimo_type_error: Exception | None = None
+        leido = False
+        ret = None
+        resultado_completo: tuple | list | None = None
+        ultimo_type_error = None
+        leido = False
+        for args in [
+            (tabla_destino.key,),
+            (tabla_destino.key, ""),
+            (tabla_destino.key, "All"),
+            (tabla_destino.key, "", ""),
+            (tabla_destino.key, "All", ""),
+        ]:
+            try:
+                resultado = db_tables.GetTableForDisplayArray(*args)
+                if not isinstance(resultado, (tuple, list)) or len(resultado) < 3:
+                    raise RuntimeError(
+                        f"ETABS devolvió una estructura inesperada para '{tabla_destino.nombre}': {resultado}"
+                    )
+                resultado_completo = tuple(resultado)
+                ret = resultado_completo[0]
+                leido = True
+                break
+            except TypeError as exc:
+                ultimo_type_error = exc
+                continue
+            except Exception as exc:  # pragma: no cover - interacción directa con COM
+                raise RuntimeError(
+                    f"No se pudo leer la tabla '{tabla_destino.nombre}' desde ETABS: {exc}"
+                ) from exc
 
-        if ret != 0:
+        if not leido or resultado_completo is None:
+            raise RuntimeError(
+                f"No se pudo leer la tabla '{tabla_destino.nombre}' desde ETABS: {ultimo_type_error}"
+            )
+
+        def _ret_ok(valor):
+            if valor in (0, "0", None, "", False):
+                return True
+            if isinstance(valor, (tuple, list)) and len(valor) == 0:
+                return True
+            try:
+                return int(valor) == 0
+            except Exception:
+                return False
+
+        if not _ret_ok(ret):
             raise RuntimeError(
                 f"ETABS devolvió el código {ret} al leer la tabla '{tabla_destino.nombre}'."
             )
 
-        headings = list(headings)
+        # Seleccionamos encabezados y datos, tratando estructuras alternativas.
+        headings_raw = resultado_completo[1] if len(resultado_completo) > 1 else ()
+        data_raw = resultado_completo[2] if len(resultado_completo) > 2 else ()
+
+        def _es_iterable(x):
+            return hasattr(x, "__iter__") and not isinstance(x, (str, bytes))
+
+        # Heurística: algunas versiones entregan (ret, ncols, headings, nrows, data, version)
+        if (not _es_iterable(headings_raw)) or isinstance(headings_raw, (int, float)):
+            if len(resultado_completo) > 2 and _es_iterable(resultado_completo[2]):
+                headings_raw = resultado_completo[2]
+                if len(resultado_completo) > 4 and _es_iterable(resultado_completo[4]):
+                    data_raw = resultado_completo[4]
+                elif len(resultado_completo) > 3 and _es_iterable(resultado_completo[3]):
+                    data_raw = resultado_completo[3]
+        else:
+            if len(resultado_completo) > 4 and not _es_iterable(data_raw) and _es_iterable(resultado_completo[4]):
+                data_raw = resultado_completo[4]
+
+        # Normalizamos encabezados y datos, incluso si vienen como escalares.
+        try:
+            headings = list(headings_raw)
+        except Exception:
+            headings = [str(headings_raw)]
+
         if not headings:
             raise RuntimeError(
                 f"La tabla '{tabla_destino.nombre}' no devolvió encabezados desde ETABS."
             )
 
-        if len(data) % len(headings) != 0:
+        try:
+            data_lista = list(data_raw)
+        except Exception:
+            data_lista = [data_raw]
+
+        # Si llega un único valor pero hay varias columnas, replicamos vacío; si llega una sola columna y un valor, construimos fila única.
+        if len(headings) > 1 and len(data_lista) == 1:
+            # Un solo valor para varias columnas: rellenar el resto con cadena vacía.
+            data_lista = data_lista + [""] * (len(headings) - 1)
+        elif len(headings) == 1 and len(data_lista) > 1 and len(data_lista) % len(headings) != 0:
+            # Una columna, datos sueltos: mantenerlos como filas de una columna.
+            pass
+
+        if len(data_lista) % len(headings) != 0:
             raise RuntimeError(
                 "El tamaño de los datos no coincide con las columnas recibidas "
                 f"para la tabla '{tabla_destino.nombre}'."
             )
 
-        filas = len(data) // len(headings)
-        registros = [data[i * len(headings):(i + 1) * len(headings)] for i in range(filas)]
+        filas = len(data_lista) // len(headings)
+        registros = [data_lista[i * len(headings):(i + 1) * len(headings)] for i in range(filas)]
         df = pd.DataFrame(registros, columns=headings)
+
+        # Filtrado adicional por casos/combos después de leer los datos (por si ETABS ignoró la selección)
+        if (casos_lista or combos_lista) and "OutputCase" in df.columns:
+            permitidos = set(casos_lista + combos_lista)
+            permitidos_norm = {str(p).strip().lower() for p in permitidos}
+            antes = len(df)
+            df = df[df["OutputCase"].astype(str).str.strip().str.lower().isin(permitidos_norm)]
+            if debug_log:
+                _escribir_debug_tabla(
+                    debug_dir,
+                    f"filtro_casos_{tabla_destino.nombre}",
+                    resultado_completo=("filtro",),
+                    headings_raw=list(df.columns),
+                    data_raw=[],
+                    motivo=(
+                        f"Filtrado OutputCase por permitidos={sorted(permitidos)} "
+                        f"filas antes={antes} despues={len(df)}"
+                    ),
+                )
+
+        if df.empty:
+            _escribir_debug_tabla(
+                debug_dir,
+                tabla_destino.nombre,
+                resultado_completo,
+                headings_raw,
+                data_raw,
+                motivo="DataFrame vacío",
+            )
+            raise RuntimeError(
+                f"La tabla '{tabla_destino.nombre}' no devolvió filas (0 registros). "
+                "Revisa que haya resultados en ETABS para esta tabla."
+            )
+
+        if debug_log:
+            _escribir_debug_tabla(
+                debug_dir,
+                tabla_destino.nombre,
+                resultado_completo,
+                headings_raw,
+                data_raw,
+                motivo="Debug solicitado (primeras filas)",
+                df_preview=df.head(5),
+            )
         resultados[nombre_tabla] = df
 
         if destino:
@@ -336,6 +513,38 @@ def _obtener_tablas_disponibles(
         db_tables.GetAvailableTables()
     )
     return ret_available, tablas_available
+
+
+def _escribir_debug_tabla(
+    carpeta: Path,
+    nombre_tabla: str,
+    resultado_completo,
+    headings_raw,
+    data_raw,
+    motivo: str,
+    df_preview=None,
+):
+    """Guarda en disco la estructura cruda devuelta por ETABS para diagnóstico."""
+
+    try:
+        carpeta.mkdir(parents=True, exist_ok=True)
+        ruta = carpeta / "debug_tablas_etabs.log"
+        with ruta.open("a", encoding="utf-8") as f:
+            f.write(f"=== {nombre_tabla} ===\n")
+            f.write(f"Motivo: {motivo}\n")
+            f.write(f"Resultado bruto: {repr(resultado_completo)}\n")
+            f.write(f"Headings raw: {repr(headings_raw)}\n")
+            f.write(f"Data raw (primeros 50): {repr(list(data_raw)[:50])}\n")
+            if df_preview is not None:
+                try:
+                    f.write("Preview DataFrame (hasta 5 filas):\n")
+                    f.write(df_preview.to_string(index=False) + "\n")
+                except Exception:
+                    pass
+            f.write("\n")
+    except Exception:
+        # Evitamos romper el flujo si el log falla.
+        pass
 
 
 def _intentar_get_all_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiagnostico]:

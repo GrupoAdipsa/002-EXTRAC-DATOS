@@ -1,0 +1,282 @@
+Story,OutputCase,CaseType,StepType,StepNumber,Item,Max Drift,Avg Drift,Ratio,Label,Max Loc X,Max Loc Y,Max Loc Z
+Story8,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000674,0.000657,1.026,39,32,0,25.5
+Story8,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000673,0.000656,1.026,43,32,32,25.5
+Story8,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.00071,0.000659,1.078,39,32,0,25.5
+Story8,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.00067,0.00067,1,23,0,32,25.5
+Story8,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000704,0.00067,1.052,43,32,32,25.5
+Story8,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000704,0.00067,1.052,23,0,32,25.5
+Story8,W,LinStatic,Step By Step,1,Diaph D1 X,3.1E-05,3.1E-05,1.018,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,2,Diaph D1 Y,3.1E-05,3.1E-05,1,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,3,Diaph D1 X,2.6E-05,2.3E-05,1.128,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,4,Diaph D1 X,2.5E-05,2.3E-05,1.092,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,5,Diaph D1 Y,2.6E-05,2.3E-05,1.109,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,6,Diaph D1 Y,2.6E-05,2.3E-05,1.109,23,0,32,25.5
+Story8,W,LinStatic,Step By Step,7,Diaph D1 X,2.3E-05,2.3E-05,1.018,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,7,Diaph D1 Y,2.4E-05,2.3E-05,1.018,23,0,32,25.5
+Story8,W,LinStatic,Step By Step,8,Diaph D1 X,2.3E-05,2.3E-05,1.018,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,8,Diaph D1 Y,2.4E-05,2.3E-05,1.018,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,9,Diaph D1 X,2.2E-05,1.7E-05,1.236,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,9,Diaph D1 Y,2.2E-05,1.7E-05,1.237,23,0,32,25.5
+Story8,W,LinStatic,Step By Step,10,Diaph D1 X,2.1E-05,1.7E-05,1.204,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,10,Diaph D1 Y,2.1E-05,1.7E-05,1.2,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,11,Diaph D1 X,2.2E-05,1.7E-05,1.236,39,32,0,25.5
+Story8,W,LinStatic,Step By Step,11,Diaph D1 Y,2.2E-05,1.7E-05,1.237,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,12,Diaph D1 X,2.1E-05,1.7E-05,1.204,43,32,32,25.5
+Story8,W,LinStatic,Step By Step,12,Diaph D1 Y,2.1E-05,1.7E-05,1.2,23,0,32,25.5
+Story8,Qx,LinRespSpec,Max,,Diaph D1 X,0.000926,0.0009,1.029,43,32,32,25.5
+Story8,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001005,0.000977,1.028,43,32,32,25.5
+Story8,EU-F,Combination,Max,,Diaph D1 X,0.001413,0.001363,1.037,43,32,32,25.5
+Story8,EU-F,Combination,Max,,Diaph D1 Y,0.001551,0.00149,1.041,43,32,32,25.5
+Story8,EU-F,Combination,Min,,Diaph D1 X,0.001413,0.001363,1.037,43,32,32,25.5
+Story8,EU-F,Combination,Min,,Diaph D1 Y,0.001545,0.001483,1.041,43,32,32,25.5
+Story8,ES-F,Combination,Max,,Diaph D1 X,0.000989,0.000954,1.037,43,32,32,25.5
+Story8,ES-F,Combination,Max,,Diaph D1 Y,0.001087,0.001043,1.041,42,32,24,25.5
+Story8,ES-F,Combination,Min,,Diaph D1 X,0.000989,0.000954,1.037,43,32,32,25.5
+Story8,ES-F,Combination,Min,,Diaph D1 Y,0.001082,0.001039,1.042,42,32,24,25.5
+Story7,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000718,0.000688,1.044,39,32,0,22.5
+Story7,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000711,0.000685,1.038,43,32,32,22.5
+Story7,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000777,0.000691,1.125,39,32,0,22.5
+Story7,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000693,0.000693,1,23,0,32,22.5
+Story7,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.00075,0.000693,1.082,43,32,32,22.5
+Story7,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.00075,0.000693,1.082,23,0,32,22.5
+Story7,W,LinStatic,Step By Step,1,Diaph D1 X,3.4E-05,3.3E-05,1.038,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,2,Diaph D1 Y,3.2E-05,3.2E-05,1,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,3,Diaph D1 X,3.1E-05,2.5E-05,1.252,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,4,Diaph D1 X,2.9E-05,2.4E-05,1.18,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,5,Diaph D1 Y,3E-05,2.4E-05,1.217,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,6,Diaph D1 Y,3E-05,2.4E-05,1.217,23,0,32,22.5
+Story7,W,LinStatic,Step By Step,7,Diaph D1 X,2.5E-05,2.4E-05,1.038,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,7,Diaph D1 Y,2.5E-05,2.4E-05,1.039,19,0,0,22.5
+Story7,W,LinStatic,Step By Step,8,Diaph D1 X,2.5E-05,2.4E-05,1.038,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,8,Diaph D1 Y,2.5E-05,2.4E-05,1.039,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,9,Diaph D1 X,2.7E-05,1.9E-05,1.461,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,9,Diaph D1 Y,2.7E-05,1.8E-05,1.473,23,0,32,22.5
+Story7,W,LinStatic,Step By Step,10,Diaph D1 X,2.5E-05,1.8E-05,1.402,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,10,Diaph D1 Y,2.5E-05,1.8E-05,1.396,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,11,Diaph D1 X,2.7E-05,1.9E-05,1.461,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,11,Diaph D1 Y,2.7E-05,1.8E-05,1.473,39,32,0,22.5
+Story7,W,LinStatic,Step By Step,12,Diaph D1 X,2.5E-05,1.8E-05,1.402,43,32,32,22.5
+Story7,W,LinStatic,Step By Step,12,Diaph D1 Y,2.5E-05,1.8E-05,1.396,23,0,32,22.5
+Story7,Qx,LinRespSpec,Max,,Diaph D1 X,0.000998,0.000957,1.042,43,32,32,22.5
+Story7,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001071,0.001027,1.043,43,32,32,22.5
+Story7,EU-F,Combination,Max,,Diaph D1 X,0.001534,0.001455,1.054,43,32,32,22.5
+Story7,EU-F,Combination,Max,,Diaph D1 Y,0.001671,0.001574,1.061,43,32,32,22.5
+Story7,EU-F,Combination,Min,,Diaph D1 X,0.001534,0.001455,1.054,43,32,32,22.5
+Story7,EU-F,Combination,Min,,Diaph D1 Y,0.001665,0.001568,1.062,43,32,32,22.5
+Story7,ES-F,Combination,Max,,Diaph D1 X,0.001074,0.001019,1.054,43,32,32,22.5
+Story7,ES-F,Combination,Max,,Diaph D1 Y,0.001171,0.001103,1.062,43,32,32,22.5
+Story7,ES-F,Combination,Min,,Diaph D1 X,0.001074,0.001019,1.054,43,32,32,22.5
+Story7,ES-F,Combination,Min,,Diaph D1 Y,0.001166,0.001098,1.062,43,32,32,22.5
+Story6,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.00075,0.000704,1.065,39,32,0,19.5
+Story6,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000736,0.0007,1.051,43,32,32,19.5
+Story6,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000837,0.000709,1.181,39,32,0,19.5
+Story6,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.0007,0.0007,1,23,0,32,19.5
+Story6,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000783,0.0007,1.119,43,32,32,19.5
+Story6,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000783,0.0007,1.119,23,0,32,19.5
+Story6,W,LinStatic,Step By Step,1,Diaph D1 X,3.6E-05,3.4E-05,1.062,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,2,Diaph D1 Y,3.3E-05,3.3E-05,1,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,3,Diaph D1 X,3.6E-05,2.6E-05,1.389,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,4,Diaph D1 X,3.2E-05,2.5E-05,1.277,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,5,Diaph D1 Y,3.3E-05,2.5E-05,1.341,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,6,Diaph D1 Y,3.3E-05,2.5E-05,1.341,23,0,32,19.5
+Story6,W,LinStatic,Step By Step,7,Diaph D1 X,2.7E-05,2.5E-05,1.062,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,7,Diaph D1 Y,2.6E-05,2.5E-05,1.063,23,0,32,19.5
+Story6,W,LinStatic,Step By Step,8,Diaph D1 X,2.7E-05,2.5E-05,1.062,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,8,Diaph D1 Y,2.6E-05,2.5E-05,1.063,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,9,Diaph D1 X,3.4E-05,2E-05,1.705,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,9,Diaph D1 Y,3.3E-05,1.9E-05,1.745,23,0,32,19.5
+Story6,W,LinStatic,Step By Step,10,Diaph D1 X,3E-05,1.8E-05,1.629,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,10,Diaph D1 Y,3E-05,1.9E-05,1.619,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,11,Diaph D1 X,3.4E-05,2E-05,1.705,39,32,0,19.5
+Story6,W,LinStatic,Step By Step,11,Diaph D1 Y,3.3E-05,1.9E-05,1.745,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,12,Diaph D1 X,3E-05,1.8E-05,1.629,43,32,32,19.5
+Story6,W,LinStatic,Step By Step,12,Diaph D1 Y,3E-05,1.9E-05,1.619,23,0,32,19.5
+Story6,Qx,LinRespSpec,Max,,Diaph D1 X,0.001052,0.000994,1.058,43,32,32,19.5
+Story6,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001113,0.001052,1.059,23,0,32,19.5
+Story6,EU-F,Combination,Max,,Diaph D1 X,0.001631,0.001519,1.073,43,32,32,19.5
+Story6,EU-F,Combination,Max,,Diaph D1 Y,0.001758,0.001624,1.083,23,0,32,19.5
+Story6,EU-F,Combination,Min,,Diaph D1 X,0.001631,0.001519,1.073,43,32,32,19.5
+Story6,EU-F,Combination,Min,,Diaph D1 Y,0.00175,0.001616,1.083,23,0,32,19.5
+Story6,ES-F,Combination,Max,,Diaph D1 X,0.001142,0.001064,1.073,43,32,32,19.5
+Story6,ES-F,Combination,Max,,Diaph D1 Y,0.001232,0.001138,1.083,23,0,32,19.5
+Story6,ES-F,Combination,Min,,Diaph D1 X,0.001142,0.001064,1.073,43,32,32,19.5
+Story6,ES-F,Combination,Min,,Diaph D1 Y,0.001226,0.001132,1.083,23,0,32,19.5
+Story5,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000781,0.000719,1.087,39,32,0,16.5
+Story5,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000763,0.000713,1.071,43,32,32,16.5
+Story5,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000901,0.000725,1.242,39,32,0,16.5
+Story5,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000703,0.000703,1,23,0,32,16.5
+Story5,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000817,0.000703,1.163,43,32,32,16.5
+Story5,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000817,0.000703,1.163,23,0,32,16.5
+Story5,W,LinStatic,Step By Step,1,Diaph D1 X,3.7E-05,3.4E-05,1.085,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,2,Diaph D1 Y,3.3E-05,3.3E-05,1,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,3,Diaph D1 X,4E-05,2.7E-05,1.522,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,4,Diaph D1 X,3.5E-05,2.5E-05,1.375,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,5,Diaph D1 Y,3.7E-05,2.5E-05,1.466,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,6,Diaph D1 Y,3.7E-05,2.5E-05,1.466,23,0,32,16.5
+Story5,W,LinStatic,Step By Step,7,Diaph D1 X,2.8E-05,2.6E-05,1.085,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,7,Diaph D1 Y,2.7E-05,2.5E-05,1.088,23,0,32,16.5
+Story5,W,LinStatic,Step By Step,8,Diaph D1 X,2.8E-05,2.6E-05,1.085,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,8,Diaph D1 Y,2.7E-05,2.5E-05,1.088,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,9,Diaph D1 X,4E-05,2E-05,1.938,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,9,Diaph D1 Y,3.8E-05,1.9E-05,2.021,23,0,32,16.5
+Story5,W,LinStatic,Step By Step,10,Diaph D1 X,3.4E-05,1.8E-05,1.858,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,10,Diaph D1 Y,3.5E-05,1.9E-05,1.845,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,11,Diaph D1 X,4E-05,2E-05,1.938,39,32,0,16.5
+Story5,W,LinStatic,Step By Step,11,Diaph D1 Y,3.8E-05,1.9E-05,2.021,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,12,Diaph D1 X,3.4E-05,1.8E-05,1.858,43,32,32,16.5
+Story5,W,LinStatic,Step By Step,12,Diaph D1 Y,3.5E-05,1.9E-05,1.845,23,0,32,16.5
+Story5,Qx,LinRespSpec,Max,,Diaph D1 X,0.001114,0.001032,1.079,43,32,32,16.5
+Story5,Qx,LinRespSpec,Max,,Diaph D1 Y,0.00025,0.000125,2,39,32,0,16.5
+Story5,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001152,0.00107,1.077,23,0,32,16.5
+Story5,EU-F,Combination,Max,,Diaph D1 X,0.00174,0.001585,1.098,43,32,32,16.5
+Story5,EU-F,Combination,Max,,Diaph D1 Y,0.001846,0.001667,1.107,23,0,32,16.5
+Story5,EU-F,Combination,Min,,Diaph D1 X,0.00174,0.001585,1.098,43,32,32,16.5
+Story5,EU-F,Combination,Min,,Diaph D1 Y,0.001837,0.001658,1.108,23,0,32,16.5
+Story5,ES-F,Combination,Max,,Diaph D1 X,0.001219,0.00111,1.098,43,32,32,16.5
+Story5,ES-F,Combination,Max,,Diaph D1 Y,0.001294,0.001168,1.108,23,0,32,16.5
+Story5,ES-F,Combination,Min,,Diaph D1 X,0.001219,0.00111,1.098,43,32,32,16.5
+Story5,ES-F,Combination,Min,,Diaph D1 Y,0.001287,0.001161,1.108,23,0,32,16.5
+Story4,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000766,0.000692,1.107,39,32,0,13.5
+Story4,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000743,0.000685,1.085,43,32,32,13.5
+Story4,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000905,0.0007,1.294,39,32,0,13.5
+Story4,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000665,0.000665,1,23,0,32,13.5
+Story4,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000798,0.000665,1.201,43,32,32,13.5
+Story4,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000798,0.000665,1.201,23,0,32,13.5
+Story4,W,LinStatic,Step By Step,1,Diaph D1 X,3.8E-05,3.4E-05,1.108,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,2,Diaph D1 Y,3.2E-05,3.2E-05,1,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,3,Diaph D1 X,4.4E-05,2.6E-05,1.658,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,4,Diaph D1 X,3.7E-05,2.5E-05,1.479,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,5,Diaph D1 Y,3.9E-05,2.4E-05,1.604,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,6,Diaph D1 Y,3.9E-05,2.4E-05,1.604,23,0,32,13.5
+Story4,W,LinStatic,Step By Step,7,Diaph D1 X,2.8E-05,2.6E-05,1.108,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,7,Diaph D1 Y,2.7E-05,2.4E-05,1.114,23,0,32,13.5
+Story4,W,LinStatic,Step By Step,8,Diaph D1 X,2.8E-05,2.6E-05,1.108,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,8,Diaph D1 Y,2.7E-05,2.4E-05,1.114,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,9,Diaph D1 X,4.4E-05,2E-05,2.175,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,9,Diaph D1 Y,4.2E-05,1.8E-05,2.322,19,0,0,13.5
+Story4,W,LinStatic,Step By Step,10,Diaph D1 X,3.8E-05,1.8E-05,2.108,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,10,Diaph D1 Y,3.8E-05,1.8E-05,2.094,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,11,Diaph D1 X,4.4E-05,2E-05,2.175,39,32,0,13.5
+Story4,W,LinStatic,Step By Step,11,Diaph D1 Y,4.2E-05,1.8E-05,2.322,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,12,Diaph D1 X,3.8E-05,1.8E-05,2.108,43,32,32,13.5
+Story4,W,LinStatic,Step By Step,12,Diaph D1 Y,3.8E-05,1.8E-05,2.094,23,0,32,13.5
+Story4,Qx,LinRespSpec,Max,,Diaph D1 X,0.001105,0.001007,1.097,43,32,32,13.5
+Story4,Qx,LinRespSpec,Max,,Diaph D1 Y,0.000292,0.000146,2,23,0,32,13.5
+Story4,Qy,LinRespSpec,Max,,Diaph D1 X,0.000198,0.000104,1.898,39,32,0,13.5
+Story4,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001116,0.001023,1.092,23,0,32,13.5
+Story4,EU-F,Combination,Max,,Diaph D1 X,0.001737,0.001553,1.118,43,32,32,13.5
+Story4,EU-F,Combination,Max,,Diaph D1 Y,0.001813,0.001607,1.128,23,0,32,13.5
+Story4,EU-F,Combination,Min,,Diaph D1 X,0.001737,0.001553,1.118,43,32,32,13.5
+Story4,EU-F,Combination,Min,,Diaph D1 Y,0.001802,0.001596,1.129,23,0,32,13.5
+Story4,ES-F,Combination,Max,,Diaph D1 X,0.001216,0.001088,1.118,43,32,32,13.5
+Story4,ES-F,Combination,Max,,Diaph D1 Y,0.001272,0.001126,1.129,23,0,32,13.5
+Story4,ES-F,Combination,Min,,Diaph D1 X,0.001216,0.001088,1.118,43,32,32,13.5
+Story4,ES-F,Combination,Min,,Diaph D1 Y,0.001263,0.001118,1.13,23,0,32,13.5
+Story3,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000704,0.000628,1.121,39,32,0,10.5
+Story3,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000687,0.000621,1.107,43,32,32,10.5
+Story3,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000855,0.000636,1.343,39,32,0,10.5
+Story3,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000592,0.000592,1,23,0,32,10.5
+Story3,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000737,0.000592,1.244,43,32,32,10.5
+Story3,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000737,0.000592,1.244,23,0,32,10.5
+Story3,W,LinStatic,Step By Step,1,Diaph D1 X,3.6E-05,3.2E-05,1.126,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,2,Diaph D1 Y,3E-05,3E-05,1,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,3,Diaph D1 X,4.5E-05,2.5E-05,1.811,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,4,Diaph D1 X,3.7E-05,2.3E-05,1.615,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,5,Diaph D1 Y,3.9E-05,2.2E-05,1.773,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,6,Diaph D1 Y,3.9E-05,2.2E-05,1.773,23,0,32,10.5
+Story3,W,LinStatic,Step By Step,7,Diaph D1 X,2.7E-05,2.4E-05,1.126,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,7,Diaph D1 Y,2.5E-05,2.2E-05,1.136,20,0,8,10.5
+Story3,W,LinStatic,Step By Step,8,Diaph D1 X,2.7E-05,2.4E-05,1.126,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,8,Diaph D1 Y,2.5E-05,2.2E-05,1.136,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,9,Diaph D1 X,4.8E-05,1.9E-05,2.445,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,9,Diaph D1 Y,4.5E-05,1.7E-05,2.682,23,0,32,10.5
+Story3,W,LinStatic,Step By Step,10,Diaph D1 X,4E-05,1.7E-05,2.42,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,10,Diaph D1 Y,4E-05,1.7E-05,2.41,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,11,Diaph D1 X,4.8E-05,1.9E-05,2.445,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,11,Diaph D1 Y,4.5E-05,1.7E-05,2.682,39,32,0,10.5
+Story3,W,LinStatic,Step By Step,12,Diaph D1 X,4E-05,1.7E-05,2.42,43,32,32,10.5
+Story3,W,LinStatic,Step By Step,12,Diaph D1 Y,4E-05,1.7E-05,2.41,23,0,32,10.5
+Story3,Qx,LinRespSpec,Max,,Diaph D1 X,0.001044,0.000932,1.12,43,32,32,10.5
+Story3,Qx,LinRespSpec,Max,,Diaph D1 Y,0.000318,0.000159,2,19,0,0,10.5
+Story3,Qy,LinRespSpec,Max,,Diaph D1 X,0.000212,0.000111,1.9,39,32,0,10.5
+Story3,Qy,LinRespSpec,Max,,Diaph D1 Y,0.001023,0.000923,1.109,23,0,32,10.5
+Story3,EU-F,Combination,Max,,Diaph D1 X,0.001651,0.001443,1.144,43,32,32,10.5
+Story3,EU-F,Combination,Max,,Diaph D1 Y,0.001686,0.001464,1.152,19,0,0,10.5
+Story3,EU-F,Combination,Min,,Diaph D1 X,0.001651,0.001443,1.144,43,32,32,10.5
+Story3,EU-F,Combination,Min,,Diaph D1 Y,0.001673,0.001451,1.153,19,0,0,10.5
+Story3,ES-F,Combination,Max,,Diaph D1 X,0.001156,0.001011,1.144,43,32,32,10.5
+Story3,ES-F,Combination,Max,,Diaph D1 Y,0.001182,0.001026,1.152,23,0,32,10.5
+Story3,ES-F,Combination,Min,,Diaph D1 X,0.001156,0.001011,1.144,43,32,32,10.5
+Story3,ES-F,Combination,Min,,Diaph D1 Y,0.001173,0.001017,1.154,23,0,32,10.5
+Story2,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000541,0.000484,1.117,39,32,0,7.5
+Story2,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000568,0.000478,1.187,43,32,32,7.5
+Story2,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000693,0.00049,1.414,39,32,0,7.5
+Story2,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000466,0.000466,1,23,0,32,7.5
+Story2,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000615,0.000466,1.318,43,32,32,7.5
+Story2,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000615,0.000466,1.318,23,0,32,7.5
+Story2,W,LinStatic,Step By Step,1,Diaph D1 X,2.9E-05,2.6E-05,1.125,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,2,Diaph D1 Y,2.4E-05,2.4E-05,1,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,3,Diaph D1 X,4.2E-05,2E-05,2.076,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,4,Diaph D1 X,3.5E-05,1.9E-05,1.906,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,5,Diaph D1 Y,3.8E-05,1.8E-05,2.049,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,6,Diaph D1 Y,3.8E-05,1.8E-05,2.049,23,0,32,7.5
+Story2,W,LinStatic,Step By Step,7,Diaph D1 X,2.2E-05,1.9E-05,1.125,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,7,Diaph D1 Y,2.1E-05,1.8E-05,1.132,23,0,32,7.5
+Story2,W,LinStatic,Step By Step,8,Diaph D1 X,2.2E-05,1.9E-05,1.125,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,8,Diaph D1 Y,2.1E-05,1.8E-05,1.132,40,32,8,7.5
+Story2,W,LinStatic,Step By Step,9,Diaph D1 X,4.6E-05,1.6E-05,2.957,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,9,Diaph D1 Y,4.4E-05,1.4E-05,3.231,23,0,32,7.5
+Story2,W,LinStatic,Step By Step,10,Diaph D1 X,4E-05,1.3E-05,3.026,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,10,Diaph D1 Y,4.1E-05,1.4E-05,2.967,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,11,Diaph D1 X,4.6E-05,1.6E-05,2.957,39,32,0,7.5
+Story2,W,LinStatic,Step By Step,11,Diaph D1 Y,4.4E-05,1.4E-05,3.231,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,12,Diaph D1 X,4E-05,1.3E-05,3.026,43,32,32,7.5
+Story2,W,LinStatic,Step By Step,12,Diaph D1 Y,4.1E-05,1.4E-05,2.967,23,0,32,7.5
+Story2,Qx,LinRespSpec,Max,,Diaph D1 X,0.000897,0.000762,1.176,43,32,32,7.5
+Story2,Qx,LinRespSpec,Max,,Diaph D1 Y,0.000342,0.000171,2,23,0,32,7.5
+Story2,Qy,LinRespSpec,Max,,Diaph D1 X,0.000212,0.00011,1.924,39,32,0,7.5
+Story2,Qy,LinRespSpec,Max,,Diaph D1 Y,0.000847,0.000745,1.137,23,0,32,7.5
+Story2,EU-F,Combination,Max,,Diaph D1 X,0.001433,0.001189,1.205,43,32,32,7.5
+Story2,EU-F,Combination,Max,,Diaph D1 Y,0.001428,0.001198,1.192,23,0,32,7.5
+Story2,EU-F,Combination,Min,,Diaph D1 X,0.001433,0.001189,1.205,43,32,32,7.5
+Story2,EU-F,Combination,Min,,Diaph D1 Y,0.001422,0.001192,1.193,23,0,32,7.5
+Story2,ES-F,Combination,Max,,Diaph D1 X,0.001004,0.000833,1.206,43,32,32,7.5
+Story2,ES-F,Combination,Max,,Diaph D1 Y,0.001002,0.00084,1.193,23,0,32,7.5
+Story2,ES-F,Combination,Min,,Diaph D1 X,0.001004,0.000833,1.206,43,32,32,7.5
+Story2,ES-F,Combination,Min,,Diaph D1 Y,0.000997,0.000835,1.194,23,0,32,7.5
+Story1,Ex,LinStatic,Step By Step,1,Diaph D1 X,0.000292,0.000264,1.106,39,32,0,4.5
+Story1,Ex,LinStatic,Step By Step,2,Diaph D1 X,0.000394,0.000261,1.509,43,32,32,4.5
+Story1,Ex,LinStatic,Step By Step,3,Diaph D1 X,0.000455,0.000266,1.71,39,32,0,4.5
+Story1,Ey,LinStatic,Step By Step,1,Diaph D1 Y,0.000268,0.000268,1,23,0,32,4.5
+Story1,Ey,LinStatic,Step By Step,2,Diaph D1 Y,0.000431,0.000268,1.611,43,32,32,4.5
+Story1,Ey,LinStatic,Step By Step,3,Diaph D1 Y,0.000431,0.000268,1.611,23,0,32,4.5
+Story1,W,LinStatic,Step By Step,1,Diaph D1 X,1.7E-05,1.5E-05,1.114,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,2,Diaph D1 Y,1.5E-05,1.5E-05,1,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,3,Diaph D1 X,3.6E-05,1.2E-05,3.047,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,4,Diaph D1 X,3.3E-05,1.1E-05,2.942,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,5,Diaph D1 Y,3.5E-05,1.2E-05,3.006,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,6,Diaph D1 Y,3.5E-05,1.2E-05,3.006,23,0,32,4.5
+Story1,W,LinStatic,Step By Step,7,Diaph D1 X,1.3E-05,1.2E-05,1.114,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,7,Diaph D1 Y,1.3E-05,1.2E-05,1.115,23,0,32,4.5
+Story1,W,LinStatic,Step By Step,8,Diaph D1 X,1.3E-05,1.2E-05,1.114,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,8,Diaph D1 Y,1.3E-05,1.2E-05,1.115,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,9,Diaph D1 X,4.5E-05,9E-06,4.868,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,9,Diaph D1 Y,4.4E-05,9E-06,5.127,23,0,32,4.5
+Story1,W,LinStatic,Step By Step,10,Diaph D1 X,4.2E-05,8E-06,5.132,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,10,Diaph D1 Y,4.2E-05,9E-06,4.898,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,11,Diaph D1 X,4.5E-05,9E-06,4.868,39,32,0,4.5
+Story1,W,LinStatic,Step By Step,11,Diaph D1 Y,4.4E-05,9E-06,5.127,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,12,Diaph D1 X,4.2E-05,8E-06,5.132,43,32,32,4.5
+Story1,W,LinStatic,Step By Step,12,Diaph D1 Y,4.2E-05,9E-06,4.898,23,0,32,4.5
+Story1,Qx,LinRespSpec,Max,,Diaph D1 X,0.000702,0.00052,1.35,43,32,32,4.5
+Story1,Qx,LinRespSpec,Max,,Diaph D1 Y,0.00041,0.000205,2,23,0,32,4.5
+Story1,Qy,LinRespSpec,Max,,Diaph D1 X,0.000227,0.000115,1.97,39,32,0,4.5
+Story1,Qy,LinRespSpec,Max,,Diaph D1 Y,0.000589,0.000477,1.234,23,0,32,4.5
+Story1,EU-F,Combination,Max,,Diaph D1 X,0.001152,0.00083,1.387,43,32,32,4.5
+Story1,EU-F,Combination,Max,,Diaph D1 Y,0.001067,0.000807,1.322,23,0,32,4.5
+Story1,EU-F,Combination,Min,,Diaph D1 X,0.001152,0.00083,1.387,43,32,32,4.5
+Story1,EU-F,Combination,Min,,Diaph D1 Y,0.001068,0.000808,1.321,23,0,32,4.5
+Story1,ES-F,Combination,Max,,Diaph D1 X,0.000807,0.000582,1.388,43,32,32,4.5
+Story1,ES-F,Combination,Max,,Diaph D1 Y,0.000749,0.000566,1.323,23,0,32,4.5
+Story1,ES-F,Combination,Min,,Diaph D1 X,0.000807,0.000582,1.388,43,32,32,4.5
+Story1,ES-F,Combination,Min,,Diaph D1 Y,0.00075,0.000567,1.323,23,0,32,4.5

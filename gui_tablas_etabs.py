@@ -15,7 +15,26 @@ ya exista un `SapModel` conectado (por ejemplo, con
 from __future__ import annotations
 
 from pathlib import Path
-from tkinter import BOTH, END, LEFT, RIGHT, TOP, Button, Checkbutton, Entry, Frame, IntVar, Label, StringVar, Tk, ttk, filedialog, messagebox
+from tkinter import (
+    BOTH,
+    END,
+    LEFT,
+    RIGHT,
+    TOP,
+    Button,
+    Checkbutton,
+    Entry,
+    Frame,
+    IntVar,
+    Label,
+    Listbox,
+    StringVar,
+    Tk,
+    ttk,
+    filedialog,
+    messagebox,
+)
+from tkinter.scrolledtext import ScrolledText
 
 from conectar_etabs import obtener_sapmodel_etabs
 from tablas_etabs import (
@@ -37,12 +56,17 @@ class _ExtractorGUI:
         self.root.geometry("520x520")
 
         self._tabla_vars: list[tuple[str, IntVar]] = []
+        self._tabla_nodes: dict[str, str] = {}
         self._formato_csv = IntVar(value=1)
         self._formato_txt = IntVar(value=0)
         self._ruta_destino = StringVar(value=str(Path.cwd() / "salidas_etabs"))
+        self._casos: list[str] = []
+        self._combos: list[str] = []
+        self._estado_cc = StringVar(value="")
 
         self._construir_layout()
         self._cargar_tablas_disponibles()
+        self._cargar_casos_combos()
 
     def _construir_layout(self) -> None:
         info = Label(
@@ -62,12 +86,14 @@ class _ExtractorGUI:
         self.lista_tablas = ttk.Treeview(
             frame_tablas,
             columns=("tabla",),
-            show="",
+            show="tree",
             selectmode="none",
-            height=12,
+            height=16,
         )
-        self.lista_tablas.column("#0", width=0, stretch=False)
-        self.lista_tablas.column("tabla", anchor="w", width=450)
+        self.lista_tablas.column("#0", width=240, anchor="w")
+        self.lista_tablas.heading("#0", text="Categoría")
+        self.lista_tablas.column("tabla", anchor="w", width=260)
+        self.lista_tablas.heading("tabla", text="Tabla")
         self.lista_tablas.pack(side=LEFT, fill=BOTH, expand=True)
 
         scroll = ttk.Scrollbar(frame_tablas, orient="vertical", command=self.lista_tablas.yview)
@@ -79,6 +105,23 @@ class _ExtractorGUI:
         Button(botones_tablas, text="Conectar a ETABS", command=self._reconectar).pack(side=LEFT, padx=5)
         Button(botones_tablas, text="Actualizar", command=self._cargar_tablas_disponibles).pack(side=LEFT, padx=5)
         Button(botones_tablas, text="Seleccionar predeterminadas", command=self._seleccionar_default).pack(side=LEFT, padx=5)
+
+        frame_cc = Frame(self.root)
+        frame_cc.pack(fill="x", padx=10, pady=5)
+        Label(frame_cc, text="Casos de carga:").pack(side=LEFT, anchor="n")
+        self.lista_casos = Listbox(frame_cc, selectmode="extended", height=6, exportselection=False, width=30)
+        self.lista_casos.pack(side=LEFT, padx=5, fill="both", expand=True)
+        Label(frame_cc, text="Combinaciones:").pack(side=LEFT, anchor="n")
+        self.lista_combos = Listbox(frame_cc, selectmode="extended", height=6, exportselection=False, width=30)
+        self.lista_combos.pack(side=LEFT, padx=5, fill="both", expand=True)
+        Button(frame_cc, text="Refrescar casos/combos", command=self._cargar_casos_combos).pack(side=LEFT, padx=5)
+        Label(self.root, textvariable=self._estado_cc, anchor="w", fg="gray").pack(fill="x", padx=10)
+        frame_cc_opts = Frame(self.root)
+        frame_cc_opts.pack(fill="x", padx=10, pady=2)
+        self._usar_casos = IntVar(value=1)
+        self._usar_combos = IntVar(value=1)
+        Checkbutton(frame_cc_opts, text="Aplicar casos seleccionados", variable=self._usar_casos).pack(side=LEFT, padx=5)
+        Checkbutton(frame_cc_opts, text="Aplicar combinaciones seleccionadas", variable=self._usar_combos).pack(side=LEFT, padx=5)
 
         frame_formatos = Frame(self.root)
         frame_formatos.pack(fill="x", padx=10, pady=10)
@@ -95,6 +138,7 @@ class _ExtractorGUI:
 
         frame_acciones = Frame(self.root)
         frame_acciones.pack(side=TOP, pady=15)
+        Button(frame_acciones, text="Previsualizar", command=self._previsualizar).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Extraer", command=self._extraer).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Cerrar", command=self.root.destroy).pack(side=LEFT, padx=10)
 
@@ -116,6 +160,7 @@ class _ExtractorGUI:
         for item in self.lista_tablas.get_children():
             self.lista_tablas.delete(item)
         self._tabla_vars.clear()
+        self._tabla_nodes.clear()
 
         if not self._asegurar_sapmodel():
             return
@@ -139,16 +184,27 @@ class _ExtractorGUI:
             )
             return
 
-        for tabla in tablas:
-            var = IntVar(value=0)
-            self._tabla_vars.append((tabla, var))
-            self.lista_tablas.insert("", END, values=(f"[ ] {tabla}",), tags=(tabla,))
-            self.lista_tablas.tag_bind(tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t))
+        grupos = self._agrupar_tablas(tablas)
+
+        for categoria, tablas_cat in grupos.items():
+            parent_id = self.lista_tablas.insert("", END, text=categoria, open=False)
+
+            for tabla in tablas_cat:
+                var = IntVar(value=0)
+                self._tabla_vars.append((tabla, var))
+                item_id = self.lista_tablas.insert(
+                    parent_id, END, text="", values=(f"[ ] {tabla}",), tags=(tabla,)
+                )
+                self._tabla_nodes[tabla] = item_id
+                self.lista_tablas.tag_bind(
+                    tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t)
+                )
 
     def _reconectar(self) -> None:
         self.sap_model = None
         if self._asegurar_sapmodel():
             self._cargar_tablas_disponibles()
+            self._cargar_casos_combos()
 
     def _toggle_tabla(self, var: IntVar, tabla: str) -> None:
         var.set(0 if var.get() else 1)
@@ -158,10 +214,7 @@ class _ExtractorGUI:
             self.lista_tablas.item(item_id, values=(texto,))
 
     def _buscar_item(self, tabla: str):
-        for item in self.lista_tablas.get_children():
-            if self.lista_tablas.item(item, "values")[0].endswith(tabla):
-                return item
-        return None
+        return self._tabla_nodes.get(tabla)
 
     def _seleccionar_default(self) -> None:
         tablas_default = set(nombre.lower() for nombre in DEFAULT_TABLES)
@@ -177,6 +230,33 @@ class _ExtractorGUI:
         carpeta = filedialog.askdirectory()
         if carpeta:
             self._ruta_destino.set(carpeta)
+
+    def _agrupar_tablas(self, tablas: list[str]) -> dict[str, list[str]]:
+        """Agrupa las tablas por categoría derivada (heurística simple)."""
+        grupos: dict[str, list[str]] = {}
+
+        for nombre in sorted(tablas, key=str.lower):
+            categoria = self._extraer_categoria(nombre)
+            grupos.setdefault(categoria, []).append(nombre)
+
+        # Ordenar tablas dentro de cada categoría
+        for cat in list(grupos):
+            grupos[cat] = sorted(grupos[cat], key=str.lower)
+
+        return dict(sorted(grupos.items(), key=lambda kv: kv[0].lower()))
+
+    @staticmethod
+    def _extraer_categoria(nombre_tabla: str) -> str:
+        """Deriva una categoría simple a partir del nombre de tabla."""
+        if ":" in nombre_tabla:
+            return nombre_tabla.split(":", 1)[0].strip()
+
+        tokens = nombre_tabla.split()
+        if len(tokens) >= 2:
+            return " ".join(tokens[:2])
+        if tokens:
+            return tokens[0]
+        return "Otras"
 
     def _extraer(self) -> None:
         if not self._asegurar_sapmodel():
@@ -208,12 +288,25 @@ class _ExtractorGUI:
             messagebox.showwarning("Carpeta requerida", "Indica una carpeta de destino para guardar los archivos.")
             return
 
+        casos, combos = self._obtener_casos_combos_seleccionados()
+        if not self._usar_casos.get():
+            casos = []
+        if not self._usar_combos.get():
+            combos = []
+        if not self._usar_casos.get():
+            casos = []
+        if not self._usar_combos.get():
+            combos = []
+
         try:
             resultado = extraer_tablas_etabs(
                 self.sap_model,
                 tablas=seleccionadas,
                 carpeta_destino=Path(ruta),
                 formatos=formatos,
+                casos=casos,
+                combinaciones=combos,
+                debug_log=True,
             )
         except Exception as exc:  # pragma: no cover - interacción COM
             messagebox.showerror("Error", f"No se pudieron exportar las tablas:\n{exc}")
@@ -224,6 +317,122 @@ class _ExtractorGUI:
             f"Se exportaron {len(resultado)} tablas en formato {', '.join(formatos)}\n"
             f"Carpeta: {Path(ruta).resolve()}",
         )
+
+    def _previsualizar(self) -> None:
+        """Lee las tablas seleccionadas y muestra un preview en memoria."""
+        if not self._asegurar_sapmodel():
+            return
+
+        seleccionadas = [tabla for tabla, var in self._tabla_vars if var.get()]
+        if not seleccionadas:
+            usar_default = messagebox.askyesno(
+                "Sin tablas seleccionadas",
+                "No elegiste ninguna tabla. ¿Usar las predeterminadas?",
+            )
+            if usar_default:
+                seleccionadas = DEFAULT_TABLES
+            else:
+                return
+
+        casos, combos = self._obtener_casos_combos_seleccionados()
+
+        try:
+            resultado = extraer_tablas_etabs(
+                self.sap_model,
+                tablas=seleccionadas,
+                carpeta_destino=None,
+                casos=casos,
+                combinaciones=combos,
+                debug_log=True,
+            )
+        except Exception as exc:
+            messagebox.showerror("Error", f"No se pudieron previsualizar las tablas:\n{exc}")
+            return
+
+        if not resultado:
+            messagebox.showinfo("Sin datos", "No se devolvieron datos para las tablas seleccionadas.")
+            return
+
+        popup = Tk()
+        popup.title("Preview de tablas")
+        texto = ScrolledText(popup, width=100, height=35)
+        texto.pack(fill=BOTH, expand=True, padx=8, pady=8)
+
+        for nombre, df in resultado.items():
+            texto.insert(END, f"=== {nombre} ===\n")
+            try:
+                vista = df.head(50)
+                texto.insert(END, vista.to_string(index=False) + "\n")
+                if len(df) > 50:
+                    texto.insert(END, f"... ({len(df) - 50} filas más)\n")
+                texto.insert(END, "\n")
+            except Exception as exc:  # pragma: no cover - defensivo
+                texto.insert(END, f"(No se pudo mostrar la tabla: {exc})\n\n")
+
+        Button(popup, text="Cerrar", command=popup.destroy).pack(pady=4)
+
+    def _cargar_casos_combos(self) -> None:
+        """Carga los casos de carga y combinaciones disponibles."""
+        if not self._asegurar_sapmodel():
+            return
+
+        self.lista_casos.delete(0, END)
+        self.lista_combos.delete(0, END)
+        self._estado_cc.set("")
+
+        ret_casos, nombres_casos = self._leer_lista_etabs(self.sap_model.LoadCases.GetNameList)
+        if nombres_casos:
+            self.lista_casos.insert(END, *[str(n) for n in nombres_casos])
+
+        ret_combos, nombres_combos = self._leer_lista_etabs(self.sap_model.RespCombo.GetNameList)
+        if nombres_combos:
+            self.lista_combos.insert(END, *[str(n) for n in nombres_combos])
+
+        self._estado_cc.set(
+            f"Casos ret={ret_casos} encontrados={len(nombres_casos)} | "
+            f"Combos ret={ret_combos} encontrados={len(nombres_combos)}"
+        )
+
+    def _obtener_casos_combos_seleccionados(self) -> tuple[list[str], list[str]]:
+        casos = [self.lista_casos.get(i) for i in self.lista_casos.curselection()]
+        combos = [self.lista_combos.get(i) for i in self.lista_combos.curselection()]
+        return casos, combos
+
+    @staticmethod
+    def _leer_lista_etabs(func):
+        """Intenta leer listas desde métodos GetNameList de ETABS manejando estructuras variadas."""
+        try:
+            resultado = func()
+        except Exception as exc:
+            return f"err:{exc}", []
+
+        # Normalizamos a lista
+        try:
+            items = list(resultado)
+        except Exception:
+            items = [resultado]
+
+        # Primer elemento como ret si es numérico, de lo contrario ret=-1 y usamos todo como datos
+        if items and isinstance(items[0], (int, float)):
+            ret = items[0]
+            datos = items[1:]
+        else:
+            ret = -1
+            datos = items
+
+        nombres: list[str] = []
+
+        def _flatten_strings(obj):
+            if isinstance(obj, str):
+                nombres.append(obj)
+            elif isinstance(obj, (list, tuple)):
+                for el in obj:
+                    _flatten_strings(el)
+
+        for elem in datos:
+            _flatten_strings(elem)
+
+        return ret, nombres
 
     def run(self) -> None:
         self.root.mainloop()
