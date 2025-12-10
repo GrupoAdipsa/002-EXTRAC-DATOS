@@ -11,7 +11,12 @@ from pathlib import Path
 from typing import Iterable
 
 from conectar_etabs import obtener_sapmodel_etabs
-from extraer_tablas import DEFAULT_TABLES, extraer_tablas_etabs, listar_tablas_etabs
+from extraer_tablas import (
+    DEFAULT_TABLES,
+    extraer_tablas_etabs,
+    listar_tablas_etabs,
+)
+from tablas_etabs import diagnosticar_listado_tablas
 
 
 def _parse_args() -> argparse.Namespace:
@@ -63,11 +68,21 @@ def probar_extraccion(
         return
 
     print("✅ Conexión establecida. Obteniendo listado de tablas disponibles...")
+    pasos_diagnostico = []
     try:
-        disponibles = listar_tablas_etabs(sap_model)
+        disponibles, pasos_diagnostico = diagnosticar_listado_tablas(sap_model)
     except Exception as exc:  # pragma: no cover - interacción COM
         print(f"❌ Error al listar tablas: {exc}")
+        pasos_error = getattr(exc, "pasos", pasos_diagnostico)
+        for paso in pasos_error:
+            icono = "✅" if paso.exito else "❌"
+            print(f"   {icono} {paso.metodo}: {paso.detalle}")
         return
+
+    print("Resultados de diagnóstico de métodos ETABS:")
+    for paso in pasos_diagnostico:
+        icono = "✅" if paso.exito else "⚠️"
+        print(f"   {icono} {paso.metodo}: {paso.detalle}")
 
     print(f"Se encontraron {len(disponibles)} tablas disponibles.")
     if disponibles:

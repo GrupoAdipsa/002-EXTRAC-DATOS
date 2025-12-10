@@ -22,7 +22,22 @@ DEFAULT_TABLES: list[str] = [
 ]
 """Tablas de ETABS que se extraen por defecto."""
 
-__all__ = ["DEFAULT_TABLES", "extraer_tablas_etabs", "listar_tablas_etabs"]
+__all__ = [
+    "DEFAULT_TABLES",
+    "extraer_tablas_etabs",
+    "listar_tablas_etabs",
+    "diagnosticar_listado_tablas",
+]
+
+
+@dataclass(frozen=True)
+class TablaDisponible:
+    """Representa una tabla expuesta por ETABS."""
+
+    key: str
+    nombre: str
+    import_type: int | None = None
+    esta_vacia: bool | None = None
 
 
 @dataclass(frozen=True)
@@ -191,6 +206,47 @@ def extraer_tablas_etabs(
                     raise ValueError(f"Formato de exportación no soportado: {formato}")
 
     return resultados
+
+
+@dataclass(frozen=True)
+class PasoDiagnostico:
+    """Describe el intento de obtención de tablas y su resultado."""
+
+    metodo: str
+    exito: bool
+    detalle: str
+
+
+def diagnosticar_listado_tablas(sap_model) -> tuple[list[TablaDisponible], list[PasoDiagnostico]]:
+    """Prueba varias rutas para listar tablas y detalla cuál funcionó.
+
+    Devuelve la lista de tablas disponibles y un log con cada intento, para
+    imprimir en consola y saber con precisión qué método de la API respondió.
+    """
+
+    if sap_model is None:
+        raise ValueError("SapModel no puede ser None. Conecta primero con ETABS.")
+
+    pasos: list[PasoDiagnostico] = []
+    db_tables = sap_model.DatabaseTables
+
+    tablas, paso = _intentar_get_all_tables(db_tables)
+    pasos.append(paso)
+    if paso.exito:
+        return tablas, pasos
+
+    tablas, paso = _intentar_get_available_tables(db_tables)
+    pasos.append(paso)
+    if paso.exito:
+        return tablas, pasos
+
+    detalle_error = "; ".join(p.detalle for p in pasos if not p.exito)
+    error = RuntimeError(
+        "No se pudieron listar las tablas disponibles desde ETABS. "
+        f"Intentos: {detalle_error or 'sin detalle'}."
+    )
+    setattr(error, "pasos", pasos)
+    raise error
 
 
 def _normalizar_formatos(formatos: str | Iterable[str]) -> list[str]:
