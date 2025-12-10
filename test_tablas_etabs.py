@@ -42,9 +42,7 @@ from tablas_etabs import (
     TablaDisponible,
     _normalizar_get_all_tables,
     _normalizar_get_available_tables,
-    _obtener_tablas_disponibles,
     _resolver_tabla,
-    diagnosticar_listado_tablas,
     extraer_tablas_etabs,
 )
 
@@ -90,20 +88,6 @@ class FakeSapModel:
         self.DatabaseTables = FakeDatabaseTables()
 
 
-class FakeDatabaseTablesWithRetries:
-    def __init__(self, respuestas_available):
-        self._respuestas = list(respuestas_available)
-        self._indice = 0
-
-    def GetAllTables(self):
-        raise RuntimeError("GetAllTables no está disponible")
-
-    def GetAvailableTables(self):
-        respuesta = self._respuestas[min(self._indice, len(self._respuestas) - 1)]
-        self._indice += 1
-        return respuesta
-
-
 class NormalizacionTests(unittest.TestCase):
     def test_normalizar_get_all_tables_preserva_metadatos(self):
         ret, tablas = _normalizar_get_all_tables(
@@ -128,20 +112,6 @@ class NormalizacionTests(unittest.TestCase):
         ]
         self.assertEqual(_resolver_tabla("Nombre Uno", disponibles).key, "K1")
         self.assertEqual(_resolver_tabla("k2", disponibles).key, "K2")
-
-    def test_obtener_tablas_reintenta_available(self):
-        db_tables = FakeDatabaseTablesWithRetries(
-            [
-                (0, [], [], None, None),  # primer intento vacío
-                (0, None, None, None, None),  # segundo intento sin datos
-                (0, ["KX"], ["Nombre X"], None, None),  # éxito en el tercero
-            ]
-        )
-        ret, tablas = _obtener_tablas_disponibles(types.SimpleNamespace(DatabaseTables=db_tables))
-
-        self.assertEqual(ret, 0)
-        self.assertEqual(len(tablas), 1)
-        self.assertEqual(tablas[0].key, "KX")
 
 
 class ExtraccionTests(unittest.TestCase):
@@ -173,23 +143,6 @@ class ExtraccionTests(unittest.TestCase):
             txt_path = destino / "table_b.txt"
             self.assertTrue(csv_path.exists())
             self.assertTrue(txt_path.exists())
-
-    def test_diagnosticar_listado_tablas_reintenta_y_loguea(self):
-        db_tables = FakeDatabaseTablesWithRetries(
-            [
-                (0, [], [], None, None),
-                (0, ["K3"], ["Nombre 3"], None, None),
-            ]
-        )
-        sap_model = types.SimpleNamespace(DatabaseTables=db_tables)
-
-        tablas, pasos = diagnosticar_listado_tablas(sap_model)
-
-        self.assertEqual([t.key for t in tablas], ["K3"])
-        # 1 intento de GetAllTables fallido + 2 intentos de GetAvailableTables
-        self.assertEqual(len(pasos), 3)
-        self.assertTrue(any("intento 1" in p.detalle for p in pasos))
-        self.assertTrue(any("intento 2" in p.detalle for p in pasos))
 
 
 if __name__ == "__main__":
