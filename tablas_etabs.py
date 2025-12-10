@@ -434,9 +434,6 @@ def _normalizar_get_available_tables(resultado) -> tuple[int, list[TablaDisponib
 
     if len(resultado) >= 5:
         ret, table_keys, table_names, import_types, vacias = resultado[:5]
-    elif len(resultado) == 4:
-        ret, table_keys, table_names, import_types = resultado[:4]
-        vacias = None
     elif len(resultado) >= 3:
         ret, table_keys, table_names = resultado[:3]
         import_types = None
@@ -453,46 +450,30 @@ def _normalizar_get_available_tables(resultado) -> tuple[int, list[TablaDisponib
             "Revisa la conexión con ETABS o la versión de la API."
         )
 
-    ret = int(ret) if ret is not None else -1
-
-    tiene_import_types = import_types is not None
-    tiene_vacias = vacias is not None
+    if ret is None:
+        ret = -1
 
     claves = list(table_keys or [])
     nombres = list(table_names or [])
-
-    if not nombres and claves:
-        nombres = list(claves)
-    if not claves and nombres:
-        claves = list(nombres)
-
-    total = max(len(claves), len(nombres))
-
-    if len(claves) < total:
-        claves.extend([None] * (total - len(claves)))
-    if len(nombres) < total:
-        nombres.extend([None] * (total - len(nombres)))
+    if len(claves) < len(nombres):
+        claves.extend(nombres[len(claves) :])
 
     tipos = list(import_types or [])
     estados_vacios = list(vacias or [])
 
-    if len(tipos) < total:
-        tipos.extend([None] * (total - len(tipos)))
-    if len(estados_vacios) < total:
-        estados_vacios.extend([None] * (total - len(estados_vacios)))
+    if len(tipos) < len(nombres):
+        tipos.extend([None] * (len(nombres) - len(tipos)))
+    if len(estados_vacios) < len(nombres):
+        estados_vacios.extend([None] * (len(nombres) - len(estados_vacios)))
 
-    tablas = []
-    for key, nombre, tipo, estado in zip(claves, nombres, tipos, estados_vacios):
-        key = key if key not in (None, "") else nombre
-        nombre = nombre if nombre not in (None, "") else key or ""
-
-        tablas.append(
-            TablaDisponible(
-                key=str(key),
-                nombre=str(nombre),
-                import_type=tipo if tiene_import_types else None,
-                esta_vacia=estado if tiene_vacias else None,
-            )
+    tablas = [
+        TablaDisponible(
+            key=str(key),
+            nombre=str(nombre),
+            import_type=tipo if import_types is not None else None,
+            esta_vacia=estado if vacias is not None else None,
         )
+        for key, nombre, tipo, estado in zip(claves, nombres, tipos, estados_vacios)
+    ]
 
     return ret, tablas
