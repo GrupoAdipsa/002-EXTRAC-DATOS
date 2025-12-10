@@ -1,5 +1,31 @@
-import comtypes.client
+import importlib
 import pandas as pd
+
+
+def _importar_comtypes():
+    """Carga lazadamente ``comtypes`` y devuelve el módulo y su cliente.
+
+    Algunas versiones de ``comtypes`` presentan fallos al importarse en
+    Python 3.13, arrojando errores como ``NameError: composite_base is not
+    defined``. Para evitar que el módulo completo se rompa al cargarse,
+    importamos de forma diferida y entregamos un mensaje más claro al
+    usuario.
+    """
+
+    try:
+        comtypes = importlib.import_module("comtypes")
+        comtypes_client = importlib.import_module("comtypes.client")
+    except NameError as exc:
+        raise RuntimeError(
+            "comtypes falló al importarse (posible incompatibilidad con Python 3.13). "
+            "Instala una versión reciente de comtypes o usa Python 3.12.x."
+        ) from exc
+    except Exception as exc:  # pragma: no cover - depende del entorno del usuario
+        raise RuntimeError(
+            "No se pudo importar comtypes. Revisa la instalación de la librería."
+        ) from exc
+
+    return comtypes, comtypes_client
 
 # -- Constantes para tipos de material
 # MAT_TYPE_STEEL = 1
@@ -34,6 +60,8 @@ UNITS_TEMP_C = 2  # Celsius
 def establecer_units_etabs(
     sap_model, unidad_fuerza, unidad_longitud, unidad_temperatura
 ):
+    comtypes, _ = _importar_comtypes()
+
     if sap_model is None:
         print("Error: El objeto SapModel proporcionado no es válido.")
         return False
@@ -81,12 +109,14 @@ def establecer_units_etabs(
 
 
 def obtener_sapmodel_etabs():
+    comtypes, comtypes_client = _importar_comtypes()
+
     sap_model = None
     ETABSObject = None
 
     try:
         print("Intentando conectar con una instancia activa de ETABS...")
-        ETABSObject = comtypes.client.GetActiveObject("CSI.ETABS.API.ETABSObject")
+        ETABSObject = comtypes_client.GetActiveObject("CSI.ETABS.API.ETABSObject")
         print("Conexión exitosa con ETABSObject.")
 
         sap_model = ETABSObject.SapModel
@@ -108,5 +138,6 @@ def obtener_sapmodel_etabs():
 
 
 def close_connection():
+    comtypes, _ = _importar_comtypes()
     comtypes.CoUninitialize()
-    
+
