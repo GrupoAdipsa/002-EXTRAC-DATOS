@@ -18,7 +18,11 @@ from pathlib import Path
 from tkinter import BOTH, END, LEFT, RIGHT, TOP, Button, Checkbutton, Entry, Frame, IntVar, Label, StringVar, Tk, ttk, filedialog, messagebox
 
 from conectar_etabs import obtener_sapmodel_etabs
-from tablas_etabs import DEFAULT_TABLES, extraer_tablas_etabs, listar_tablas_etabs
+from tablas_etabs import (
+    DEFAULT_TABLES,
+    diagnosticar_listado_tablas,
+    extraer_tablas_etabs,
+)
 
 __all__ = ["lanzar_gui_etabs"]
 
@@ -117,9 +121,15 @@ class _ExtractorGUI:
             return
 
         try:
-            tablas = listar_tablas_etabs(self.sap_model)
+            tablas_disponibles, pasos = diagnosticar_listado_tablas(self.sap_model)
+            tablas = [t.nombre for t in tablas_disponibles]
         except Exception as exc:  # pragma: no cover - interacción COM
-            messagebox.showerror("Error", f"No se pudo obtener el listado de tablas:\n{exc}")
+            pasos = getattr(exc, "pasos", [])
+            log = "\n".join(f"- {p.metodo}: {p.detalle}" for p in pasos) or "Sin detalle"
+            messagebox.showerror(
+                "Error",
+                f"No se pudo obtener el listado de tablas:\n{exc}\n\nDiagnóstico:\n{log}",
+            )
             return
 
         if not tablas:

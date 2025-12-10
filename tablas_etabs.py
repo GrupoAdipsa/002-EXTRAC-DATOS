@@ -67,7 +67,7 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
             "No se pudieron listar las tablas disponibles desde ETABS."
         ) from exc
 
-    if ret != 0:
+    if ret != 0 and not tablas_disponibles:
         raise RuntimeError(
             f"ETABS devolvió el código {ret} al solicitar el listado de tablas."
         )
@@ -327,12 +327,15 @@ def _obtener_tablas_disponibles(
     try:
         ret_all, tablas_all = _normalizar_get_all_tables(db_tables.GetAllTables())
     except Exception:
-        ret_all = None
+        ret_all, tablas_all = None, []
     else:
-        if ret_all == 0 and tablas_all:
+        if tablas_all:
             return ret_all, tablas_all
 
-    return _normalizar_get_available_tables(db_tables.GetAvailableTables())
+    ret_available, tablas_available = _normalizar_get_available_tables(
+        db_tables.GetAvailableTables()
+    )
+    return ret_available, tablas_available
 
 
 def _intentar_get_all_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiagnostico]:
@@ -350,12 +353,14 @@ def _intentar_get_all_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiag
     detalle = f"ret={ret}, tablas={len(tablas)}"
     return tablas, PasoDiagnostico(
         metodo="GetAllTables",
-        exito=ret == 0 and bool(tablas),
+        exito=bool(tablas),
         detalle=detalle,
     )
 
 
-def _intentar_get_available_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiagnostico]:
+def _intentar_get_available_tables(
+    db_tables, intento: int | None = None
+) -> tuple[list[TablaDisponible], PasoDiagnostico]:
     """Ejecuta GetAvailableTables con normalización defensiva."""
 
     try:
@@ -364,13 +369,13 @@ def _intentar_get_available_tables(db_tables) -> tuple[list[TablaDisponible], Pa
         return [], PasoDiagnostico(
             metodo="GetAvailableTables",
             exito=False,
-            detalle=f"estructura inesperada o excepción: {exc}",
+            detalle=f"estructura inesperada o excepción: {exc} (intento={intento})",
         )
 
-    detalle = f"ret={ret}, tablas={len(tablas)}"
+    detalle = f"ret={ret}, tablas={len(tablas)}, intento={intento}"
     return tablas, PasoDiagnostico(
         metodo="GetAvailableTables",
-        exito=ret == 0 and bool(tablas),
+        exito=bool(tablas),
         detalle=detalle,
     )
 
@@ -378,10 +383,13 @@ def _intentar_get_available_tables(db_tables) -> tuple[list[TablaDisponible], Pa
 def _normalizar_get_all_tables(resultado) -> tuple[int, list[TablaDisponible]]:
     """Convierte la respuesta de ``GetAllTables`` en datos homogéneos."""
 
-    if not isinstance(resultado, tuple):  # pragma: no cover - defensivo
-        raise TypeError(
-            "GetAllTables devolvió un tipo inesperado. Se esperaba un tuple."
-        )
+    if not isinstance(resultado, (tuple, list)):  # pragma: no cover - defensivo
+        try:
+            resultado = tuple(resultado)
+        except Exception:
+            raise TypeError(
+                "GetAllTables devolvió un tipo inesperado. Se esperaba un tuple o secuencia."
+            )
 
     if len(resultado) < 3:
         raise ValueError(
@@ -432,10 +440,13 @@ def _normalizar_get_all_tables(resultado) -> tuple[int, list[TablaDisponible]]:
 def _normalizar_get_available_tables(resultado) -> tuple[int, list[TablaDisponible]]:
     """Convierte la respuesta de ``GetAvailableTables`` en una lista homogénea."""
 
-    if not isinstance(resultado, tuple):  # pragma: no cover - defensive
-        raise TypeError(
-            "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple."
-        )
+    if not isinstance(resultado, (tuple, list)):  # pragma: no cover - defensive
+        try:
+            resultado = tuple(resultado)
+        except Exception:
+            raise TypeError(
+                "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple o secuencia."
+            )
 
     if len(resultado) >= 5:
         ret, table_keys, table_names, import_types, vacias = resultado[:5]
@@ -458,18 +469,26 @@ def _normalizar_get_available_tables(resultado) -> tuple[int, list[TablaDisponib
     if ret is None:
         ret = -1
 
+    if (table_names is None or len(table_names) == 0) and table_keys:
+        table_names = table_keys
+
     claves = list(table_keys or [])
     nombres = list(table_names or [])
-    if len(claves) < len(nombres):
-        claves.extend(nombres[len(claves) :])
+
+    total = max(len(claves), len(nombres))
+
+    if len(claves) < total:
+        claves.extend([None] * (total - len(claves)))
+    if len(nombres) < total:
+        nombres.extend(claves[len(nombres) :])
 
     tipos = list(import_types or [])
     estados_vacios = list(vacias or [])
 
-    if len(tipos) < len(nombres):
-        tipos.extend([None] * (len(nombres) - len(tipos)))
-    if len(estados_vacios) < len(nombres):
-        estados_vacios.extend([None] * (len(nombres) - len(estados_vacios)))
+    if len(tipos) < total:
+        tipos.extend([None] * (total - len(tipos)))
+    if len(estados_vacios) < total:
+        estados_vacios.extend([None] * (total - len(estados_vacios)))
 
     tablas = [
         TablaDisponible(
