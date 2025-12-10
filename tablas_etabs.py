@@ -227,10 +227,11 @@ def diagnosticar_listado_tablas(sap_model) -> tuple[list[TablaDisponible], list[
     if paso.exito:
         return tablas, pasos
 
-    tablas, paso = _intentar_get_available_tables(db_tables)
-    pasos.append(paso)
-    if paso.exito:
-        return tablas, pasos
+    for intento in range(1, 1 + 4):
+        tablas, paso = _intentar_get_available_tables(db_tables, intento=intento)
+        pasos.append(paso)
+        if paso.exito:
+            return tablas, pasos
 
     detalle_error = "; ".join(p.detalle for p in pasos if not p.exito)
     error = RuntimeError(
@@ -308,13 +309,17 @@ def _resolver_tabla(nombre_solicitado: str, disponibles: list[TablaDisponible]) 
     )
 
 
-def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
+def _obtener_tablas_disponibles(
+    sap_model, reintentos_available: int = 4
+) -> tuple[int, list[TablaDisponible]]:
     """Obtiene las tablas usando ``GetAllTables`` y hace fallback a ``GetAvailableTables``.
 
     La API de ETABS puede devolver keys y nombres (``GetAllTables``) o solo
     nombres (``GetAvailableTables``). Este helper intenta primero la opción más
     completa y normaliza los resultados para que siempre se disponga de un
-    listado de :class:`TablaDisponible`.
+    listado de :class:`TablaDisponible`. Si el listado disponible llega vacío o
+    la llamada arroja excepciones intermitentes, se vuelve a intentar hasta
+    ``reintentos_available`` veces para cubrir respuestas inestables.
     """
 
     db_tables = sap_model.DatabaseTables
