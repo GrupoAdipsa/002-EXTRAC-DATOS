@@ -31,8 +31,6 @@ class TablaDisponible:
 
     key: str
     nombre: str
-    import_type: int | None = None
-    esta_vacia: bool | None = None
 
 
 def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
@@ -274,26 +272,23 @@ def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
     db_tables = sap_model.DatabaseTables
 
     try:
-        tablas_all = _normalizar_get_all_tables(db_tables.GetAllTables())
+        ret, table_keys, table_names = db_tables.GetAllTables()
     except Exception:
         ret = None
     else:
-        if tablas_all.ret == 0 and tablas_all.nombres:
+        if ret is None:
+            ret = -1
+        if ret == 0 and table_names:
+            claves = list(table_keys or [])
+            if len(claves) < len(table_names):
+                claves.extend(table_names[len(claves) :])
+
             tablas = [
-                TablaDisponible(
-                    key=key,
-                    nombre=nombre,
-                    import_type=int(tipo) if tipo is not None else None,
-                    esta_vacia=tablas_all.esta_vacia,
-                )
-                for key, nombre, tipo in zip(
-                    tablas_all.keys, tablas_all.nombres, tablas_all.import_types
-                )
+                TablaDisponible(key=str(key), nombre=str(nombre))
+                for key, nombre in zip(claves, table_names)
             ]
             if tablas:
-                return tablas_all.ret, tablas
-
-        ret = tablas_all.ret
+                return ret, tablas
 
     resultado = db_tables.GetAvailableTables()
     if not isinstance(resultado, tuple):  # pragma: no cover - defensive
@@ -303,80 +298,11 @@ def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
 
     if len(resultado) >= 2:
         ret = resultado[0]
-        table_names = list(resultado[1] or [])
-        keys = list(resultado[2] or []) if len(resultado) > 2 else []
-        import_types = list(resultado[3] or []) if len(resultado) > 3 else []
-
-        if len(keys) < len(table_names):
-            keys.extend(table_names[len(keys) :])
-
-        if len(import_types) < len(table_names):
-            import_types.extend([None] * (len(table_names) - len(import_types)))
-
-        tablas = [
-            TablaDisponible(
-                key=str(keys[i]) if i < len(keys) else str(nombre),
-                nombre=str(nombre),
-                import_type=(
-                    int(import_types[i])
-                    if i < len(import_types) and import_types[i] is not None
-                    else None
-                ),
-            )
-            for i, nombre in enumerate(table_names)
-        ]
+        table_names = resultado[1] or []
+        tablas = [TablaDisponible(key=str(nombre), nombre=str(nombre)) for nombre in table_names]
         return ret, tablas
 
     raise ValueError(
         "GetAvailableTables no devolvió información de tablas. "
         "Revisa la conexión con ETABS o la versión de la API."
-    )
-
-
-@dataclass
-class _ResultadoGetAllTables:
-    ret: int
-    keys: list[str]
-    nombres: list[str]
-    import_types: list[int | None]
-    esta_vacia: bool | None
-
-
-def _normalizar_get_all_tables(resultado) -> _ResultadoGetAllTables:
-    """Convierte la respuesta de ``GetAllTables`` en datos homogéneos.
-
-    La API puede devolver las tuplas con distintos números de elementos
-    dependiendo de la versión (por ejemplo, con o sin ``IsEmpty``). Este
-    helper valida la estructura y retorna valores listos para consumo.
-    """
-
-    if not isinstance(resultado, tuple):  # pragma: no cover - defensivo
-        raise TypeError(
-            "GetAllTables devolvió un tipo inesperado. Se esperaba un tuple."
-        )
-
-    if len(resultado) < 4:
-        raise ValueError(
-            "GetAllTables devolvió menos de 4 elementos. Revisa la versión de la API."
-        )
-
-    ret = int(resultado[0]) if resultado[0] is not None else -1
-    keys = [str(k) for k in (resultado[2] or [])]
-    nombres = [str(n) for n in (resultado[3] or [])]
-    import_types = [int(t) for t in (resultado[4] or [])] if len(resultado) > 4 else []
-
-    if len(keys) < len(nombres):
-        keys.extend(nombres[len(keys) :])
-
-    if len(import_types) < len(nombres):
-        import_types.extend([None] * (len(nombres) - len(import_types)))
-
-    esta_vacia = bool(resultado[5]) if len(resultado) > 5 else None
-
-    return _ResultadoGetAllTables(
-        ret=ret,
-        keys=keys,
-        nombres=nombres,
-        import_types=import_types,
-        esta_vacia=esta_vacia,
     )
