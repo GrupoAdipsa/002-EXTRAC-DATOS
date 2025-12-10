@@ -40,14 +40,6 @@ class TablaDisponible:
     esta_vacia: bool | None = None
 
 
-@dataclass(frozen=True)
-class TablaDisponible:
-    """Representa una tabla expuesta por ETABS."""
-
-    key: str
-    nombre: str
-
-
 def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
     """Devuelve las tablas disponibles en el modelo abierto de ETABS.
 
@@ -352,13 +344,48 @@ def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
             "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple."
         )
 
-    if len(resultado) >= 2:
+    if len(resultado) >= 5:
+        ret, table_keys, table_names, import_types, vacias = resultado[:5]
+    elif len(resultado) >= 3:
+        ret, table_keys, table_names = resultado[:3]
+        import_types = None
+        vacias = None
+    elif len(resultado) >= 2:
         ret = resultado[0]
-        table_names = resultado[1] or []
-        tablas = [TablaDisponible(key=str(nombre), nombre=str(nombre)) for nombre in table_names]
-        return ret, tablas
+        table_keys = resultado[1]
+        table_names = resultado[1]
+        import_types = None
+        vacias = None
+    else:
+        raise ValueError(
+            "GetAvailableTables no devolvió información de tablas. "
+            "Revisa la conexión con ETABS o la versión de la API."
+        )
 
-    raise ValueError(
-        "GetAvailableTables no devolvió información de tablas. "
-        "Revisa la conexión con ETABS o la versión de la API."
-    )
+    if ret is None:
+        ret = -1
+
+    claves = list(table_keys or [])
+    nombres = list(table_names or [])
+    if len(claves) < len(nombres):
+        claves.extend(nombres[len(claves) :])
+
+    tipos = list(import_types or [])
+    estados_vacios = list(vacias or [])
+
+    if len(tipos) < len(nombres):
+        tipos.extend([None] * (len(nombres) - len(tipos)))
+    if len(estados_vacios) < len(nombres):
+        estados_vacios.extend([None] * (len(nombres) - len(estados_vacios)))
+
+    tablas = [
+        TablaDisponible(
+            key=str(key),
+            nombre=str(nombre),
+            import_type=tipo if import_types is not None else None,
+            esta_vacia=estado if vacias is not None else None,
+        )
+        for key, nombre, tipo, estado in zip(claves, nombres, tipos, estados_vacios)
+    ]
+
+    return ret, tablas
