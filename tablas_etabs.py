@@ -45,7 +45,7 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
         raise ValueError("SapModel no puede ser None. Conecta primero con ETABS.")
 
     try:
-        resultado = sap_model.DatabaseTables.GetAvailableTables()
+        ret, table_names = _leer_tablas_disponibles(sap_model)
     except Exception as exc:  # pragma: no cover - interacción directa con COM
         raise RuntimeError(
             "No se pudieron listar las tablas disponibles desde ETABS."
@@ -105,6 +105,12 @@ def extraer_tablas_etabs(
     if not tablas_a_extraer:
         raise ValueError("No se proporcionaron tablas a extraer.")
 
+    tablas_disponibles = listar_tablas_etabs(sap_model)
+    if not tablas_disponibles:
+        raise RuntimeError(
+            "ETABS no devolvió ningún nombre de tabla disponible para el modelo abierto."
+        )
+
     destino: Path | None = None
     formatos_normalizados: list[str] = []
     if carpeta_destino:
@@ -116,6 +122,7 @@ def extraer_tablas_etabs(
     resultados: dict[str, pd.DataFrame] = {}
 
     for nombre_tabla in tablas_a_extraer:
+        nombre_tabla_etabs = _resolver_nombre_tabla(nombre_tabla, tablas_disponibles)
         try:
             (
                 ret,
@@ -125,27 +132,27 @@ def extraer_tablas_etabs(
                 _,
                 __,
                 ___,
-            ) = db_tables.GetTableForDisplayArray(nombre_tabla)
+            ) = db_tables.GetTableForDisplayArray(nombre_tabla_etabs)
         except Exception as exc:  # pragma: no cover - interacción directa con COM
             raise RuntimeError(
-                f"No se pudo leer la tabla '{nombre_tabla}' desde ETABS: {exc}"
+                f"No se pudo leer la tabla '{nombre_tabla_etabs}' desde ETABS: {exc}"
             ) from exc
 
         if ret != 0:
             raise RuntimeError(
-                f"ETABS devolvió el código {ret} al leer la tabla '{nombre_tabla}'."
+                f"ETABS devolvió el código {ret} al leer la tabla '{nombre_tabla_etabs}'."
             )
 
         headings = list(headings)
         if not headings:
             raise RuntimeError(
-                f"La tabla '{nombre_tabla}' no devolvió encabezados desde ETABS."
+                f"La tabla '{nombre_tabla_etabs}' no devolvió encabezados desde ETABS."
             )
 
         if len(data) % len(headings) != 0:
             raise RuntimeError(
                 "El tamaño de los datos no coincide con las columnas recibidas "
-                f"para la tabla '{nombre_tabla}'."
+                f"para la tabla '{nombre_tabla_etabs}'."
             )
 
         filas = len(data) // len(headings)
@@ -199,3 +206,58 @@ def _normalizar_formatos(formatos: str | Iterable[str]) -> list[str]:
             normalizados.append(formato_limpio)
 
     return normalizados
+
+
+def _resolver_nombre_tabla(nombre_solicitado: str, disponibles: list[str]) -> str:
+    """Encuentra el nombre de tabla tal como lo expone ETABS.
+
+    Si ``nombre_solicitado`` no aparece de forma exacta en ``disponibles`` se
+    realiza una búsqueda parcial (case-insensitive) para localizar un nombre
+    que contenga el texto indicado. Esto permite usar etiquetas abreviadas como
+    "Story Drifts" aunque ETABS la exponga como "Analysis Results - Story Drifts".
+    """
+
+    if nombre_solicitado in disponibles:
+        return nombre_solicitado
+
+    patron = nombre_solicitado.lower()
+    candidatos = [nombre for nombre in disponibles if patron in nombre.lower()]
+    if len(candidatos) == 1:
+        return candidatos[0]
+
+    if candidatos:
+        raise ValueError(
+            "El nombre de tabla no es único. Especifícalo con mayor precisión. "
+            f"Coincidencias encontradas: {', '.join(sorted(candidatos))}"
+        )
+
+    raise ValueError(
+        f"La tabla '{nombre_solicitado}' no se encontró en ETABS. "
+        "Revisa que el modelo tenga resultados disponibles y que el nombre sea correcto."
+    )
+
+
+def _leer_tablas_disponibles(sap_model) -> tuple[int, list[str]]:
+    """Obtiene y normaliza el resultado de ``GetAvailableTables``.
+
+    La API de ETABS puede entregar un número variable de valores al llamar a
+    ``DatabaseTables.GetAvailableTables`` dependiendo de la versión y del
+    wrapper COM usado. Este helper acepta las variantes más comunes y extrae
+    siempre un tuple con ``(ret, table_names)``.
+    """
+
+    resultado = sap_model.DatabaseTables.GetAvailableTables()
+    if not isinstance(resultado, tuple):  # pragma: no cover - defensive
+        raise TypeError(
+            "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple."
+        )
+
+    if len(resultado) >= 2:
+        ret = resultado[0]
+        table_names = resultado[1] or []
+        return ret, table_names
+
+    raise ValueError(
+        "GetAvailableTables no devolvió información de tablas. "
+        "Revisa la conexión con ETABS o la versión de la API."
+    )
