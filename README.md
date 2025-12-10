@@ -20,6 +20,12 @@ Este repositorio reúne utilidades simples para conectarse a un modelo abierto d
 
 Para saber qué tablas tienes disponibles en tu modelo, usa `listar_tablas_etabs` y, si quieres, aplícale un filtro.
 
+### ¿Cómo sé que funcionó?
+
+- Si `prueba_extraccion.py` o tu script no muestran errores y aparece el mensaje de ✅ con el número de tablas, la extracción se ejecutó. 
+- Cuando no envías `--salida`, el script imprime las primeras filas de cada tabla; si una tabla aparece como "(sin filas devueltas)", significa que ETABS no tenía datos para esa tabla en ese momento (por ejemplo, porque faltan resultados calculados).
+- Si envías `--salida`, revisa los archivos generados en la carpeta indicada para confirmar que se escribieron correctamente.
+
 ## Ejemplo rápido
 
 ```python

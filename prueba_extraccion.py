@@ -96,8 +96,13 @@ def probar_extraccion(
         print(f"Archivos guardados en: {carpeta_destino.resolve()}")
     else:
         for nombre, df in resultado.items():
-            print(f"\nTabla: {nombre} (primeras {min(max_filas, len(df))} filas)")
-            print(df.head(max_filas))
+            if df.empty:
+                print(f"\nTabla: {nombre} (sin filas devueltas)")
+            else:
+                print(
+                    f"\nTabla: {nombre} (primeras {min(max_filas, len(df))} filas de {len(df)})"
+                )
+                print(df.head(max_filas))
 
 
 if __name__ == "__main__":  # pragma: no cover - script de apoyo
