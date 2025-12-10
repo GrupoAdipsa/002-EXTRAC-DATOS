@@ -44,32 +44,12 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
     if sap_model is None:
         raise ValueError("SapModel no puede ser None. Conecta primero con ETABS.")
 
-    if not hasattr(sap_model, "DatabaseTables"):
-        raise RuntimeError(
-            "El objeto SapModel no expone 'DatabaseTables'. Verifica la conexión "
-            "con ETABS o que la API esté registrada correctamente."
-        )
-
     try:
         resultado = sap_model.DatabaseTables.GetAvailableTables()
     except Exception as exc:  # pragma: no cover - interacción directa con COM
         raise RuntimeError(
             "No se pudieron listar las tablas disponibles desde ETABS."
         ) from exc
-
-    if not isinstance(resultado, tuple):
-        raise RuntimeError(
-            "ETABS devolvió un formato inesperado al listar las tablas disponibles."
-        )
-
-    if len(resultado) == 3:
-        ret, _table_keys, table_names = resultado
-    elif len(resultado) >= 4:
-        ret, _table_keys, table_names, *_ = resultado
-    else:
-        raise RuntimeError(
-            "ETABS devolvió un número insuficiente de valores al listar las tablas."
-        )
 
     if ret != 0:
         raise RuntimeError(
