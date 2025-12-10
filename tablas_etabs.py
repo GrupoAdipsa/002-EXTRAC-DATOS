@@ -320,25 +320,113 @@ def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
     db_tables = sap_model.DatabaseTables
 
     try:
-        ret, table_keys, table_names = db_tables.GetAllTables()
+        ret_all, tablas_all = _normalizar_get_all_tables(db_tables.GetAllTables())
     except Exception:
-        ret = None
+        ret_all = None
     else:
-        if ret is None:
-            ret = -1
-        if ret == 0 and table_names:
-            claves = list(table_keys or [])
-            if len(claves) < len(table_names):
-                claves.extend(table_names[len(claves) :])
+        if ret_all == 0 and tablas_all:
+            return ret_all, tablas_all
 
-            tablas = [
-                TablaDisponible(key=str(key), nombre=str(nombre))
-                for key, nombre in zip(claves, table_names)
-            ]
-            if tablas:
-                return ret, tablas
+    return _normalizar_get_available_tables(db_tables.GetAvailableTables())
 
-    resultado = db_tables.GetAvailableTables()
+
+def _intentar_get_all_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiagnostico]:
+    """Ejecuta GetAllTables y devuelve tablas o el detalle del fallo."""
+
+    try:
+        ret, tablas = _normalizar_get_all_tables(db_tables.GetAllTables())
+    except Exception as exc:  # pragma: no cover - interacción COM
+        return [], PasoDiagnostico(
+            metodo="GetAllTables",
+            exito=False,
+            detalle=f"excepción: {exc}",
+        )
+
+    detalle = f"ret={ret}, tablas={len(tablas)}"
+    return tablas, PasoDiagnostico(
+        metodo="GetAllTables",
+        exito=ret == 0 and bool(tablas),
+        detalle=detalle,
+    )
+
+
+def _intentar_get_available_tables(db_tables) -> tuple[list[TablaDisponible], PasoDiagnostico]:
+    """Ejecuta GetAvailableTables con normalización defensiva."""
+
+    try:
+        ret, tablas = _normalizar_get_available_tables(db_tables.GetAvailableTables())
+    except Exception as exc:  # pragma: no cover - interacción COM
+        return [], PasoDiagnostico(
+            metodo="GetAvailableTables",
+            exito=False,
+            detalle=f"estructura inesperada o excepción: {exc}",
+        )
+
+    detalle = f"ret={ret}, tablas={len(tablas)}"
+    return tablas, PasoDiagnostico(
+        metodo="GetAvailableTables",
+        exito=ret == 0 and bool(tablas),
+        detalle=detalle,
+    )
+
+
+def _normalizar_get_all_tables(resultado) -> tuple[int, list[TablaDisponible]]:
+    """Convierte la respuesta de ``GetAllTables`` en datos homogéneos."""
+
+    if not isinstance(resultado, tuple):  # pragma: no cover - defensivo
+        raise TypeError(
+            "GetAllTables devolvió un tipo inesperado. Se esperaba un tuple."
+        )
+
+    if len(resultado) < 3:
+        raise ValueError(
+            "GetAllTables devolvió menos de 3 elementos. Revisa la versión de la API."
+        )
+
+    ret = int(resultado[0]) if resultado[0] is not None else -1
+    table_keys = list(resultado[1] or [])
+    table_names = list(resultado[2] or [])
+    tiene_import_types = len(resultado) > 3 and resultado[3] is not None
+    tiene_vacias = len(resultado) > 4 and resultado[4] is not None
+
+    import_types = list(resultado[3] or []) if len(resultado) > 3 else []
+    vacias = list(resultado[4] or []) if len(resultado) > 4 else []
+
+    total = max(len(table_keys), len(table_names))
+
+    if not table_names and table_keys:
+        table_names = list(table_keys)
+
+    if len(table_keys) < total:
+        table_keys.extend([None] * (total - len(table_keys)))
+    if len(table_names) < total:
+        table_names.extend([None] * (total - len(table_names)))
+
+    if len(import_types) < total:
+        import_types.extend([None] * (total - len(import_types)))
+    if len(vacias) < total:
+        vacias.extend([None] * (total - len(vacias)))
+
+    tablas = []
+    for key, nombre, tipo, estado in zip(table_keys, table_names, import_types, vacias):
+        key = key if key not in (None, "") else nombre
+        nombre = nombre if nombre not in (None, "") else key or ""
+
+        tablas.append(
+            TablaDisponible(
+                key=str(key),
+                nombre=str(nombre),
+                import_type=tipo if tiene_import_types else None,
+                esta_vacia=estado if tiene_vacias else None,
+            )
+        )
+
+    return ret, tablas
+
+
+def _normalizar_get_available_tables(resultado) -> tuple[int, list[TablaDisponible]]:
+    """Convierte la respuesta de ``GetAvailableTables`` en una lista homogénea."""
+
     if not isinstance(resultado, tuple):  # pragma: no cover - defensive
         raise TypeError(
             "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple."
