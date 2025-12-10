@@ -22,8 +22,7 @@ Para saber qué tablas tienes disponibles en tu modelo, usa `listar_tablas_etabs
 
 ### ¿Cómo sé que funcionó?
 
-- Si `prueba_extraccion.py` o tu script no muestran errores y aparece el mensaje de ✅ con el número de tablas, la extracción se ejecutó.
-- Al inicio `prueba_extraccion.py` imprime qué método de la API respondió (`GetAllTables` o `GetAvailableTables`); si alguno falla verás un ⚠️/❌ con el detalle devuelto por ETABS.
+- Si `prueba_extraccion.py` o tu script no muestran errores y aparece el mensaje de ✅ con el número de tablas, la extracción se ejecutó. 
 - Cuando no envías `--salida`, el script imprime las primeras filas de cada tabla; si una tabla aparece como "(sin filas devueltas)", significa que ETABS no tenía datos para esa tabla en ese momento (por ejemplo, porque faltan resultados calculados).
 - Si envías `--salida`, revisa los archivos generados en la carpeta indicada para confirmar que se escribieron correctamente.
 
