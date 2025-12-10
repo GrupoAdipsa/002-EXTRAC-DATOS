@@ -8,6 +8,7 @@ sin tener que preocuparse por la interacción directa con ``SapModel``.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -22,6 +23,14 @@ DEFAULT_TABLES: list[str] = [
 """Tablas de ETABS que se extraen por defecto."""
 
 __all__ = ["DEFAULT_TABLES", "extraer_tablas_etabs", "listar_tablas_etabs"]
+
+
+@dataclass(frozen=True)
+class TablaDisponible:
+    """Representa una tabla expuesta por ETABS."""
+
+    key: str
+    nombre: str
 
 
 def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
@@ -45,7 +54,7 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
         raise ValueError("SapModel no puede ser None. Conecta primero con ETABS.")
 
     try:
-        resultado = sap_model.DatabaseTables.GetAvailableTables()
+        ret, tablas_disponibles = _obtener_tablas_disponibles(sap_model)
     except Exception as exc:  # pragma: no cover - interacción directa con COM
         raise RuntimeError(
             "No se pudieron listar las tablas disponibles desde ETABS."
@@ -56,7 +65,7 @@ def listar_tablas_etabs(sap_model, filtro: str | None = None) -> list[str]:
             f"ETABS devolvió el código {ret} al solicitar el listado de tablas."
         )
 
-    tablas = list(table_names)
+    tablas = [tabla.nombre for tabla in tablas_disponibles]
     if filtro:
         patron = filtro.lower()
         tablas = [nombre for nombre in tablas if patron in nombre.lower()]
@@ -105,6 +114,12 @@ def extraer_tablas_etabs(
     if not tablas_a_extraer:
         raise ValueError("No se proporcionaron tablas a extraer.")
 
+    _, tablas_disponibles = _obtener_tablas_disponibles(sap_model)
+    if not tablas_disponibles:
+        raise RuntimeError(
+            "ETABS no devolvió ningún nombre de tabla disponible para el modelo abierto."
+        )
+
     destino: Path | None = None
     formatos_normalizados: list[str] = []
     if carpeta_destino:
@@ -116,6 +131,15 @@ def extraer_tablas_etabs(
     resultados: dict[str, pd.DataFrame] = {}
 
     for nombre_tabla in tablas_a_extraer:
+        tabla_destino = _resolver_tabla(nombre_tabla, tablas_disponibles)
+        try:
+            db_tables.SetAllTablesSelected(False)
+            db_tables.SetTableSelected(tabla_destino.key)
+        except Exception:
+            # Algunos wrappers COM no requieren seleccionar previamente las tablas.
+            # Si falla la selección, seguimos e intentamos la lectura directa.
+            pass
+
         try:
             (
                 ret,
@@ -125,27 +149,27 @@ def extraer_tablas_etabs(
                 _,
                 __,
                 ___,
-            ) = db_tables.GetTableForDisplayArray(nombre_tabla)
+            ) = db_tables.GetTableForDisplayArray(tabla_destino.key)
         except Exception as exc:  # pragma: no cover - interacción directa con COM
             raise RuntimeError(
-                f"No se pudo leer la tabla '{nombre_tabla}' desde ETABS: {exc}"
+                f"No se pudo leer la tabla '{tabla_destino.nombre}' desde ETABS: {exc}"
             ) from exc
 
         if ret != 0:
             raise RuntimeError(
-                f"ETABS devolvió el código {ret} al leer la tabla '{nombre_tabla}'."
+                f"ETABS devolvió el código {ret} al leer la tabla '{tabla_destino.nombre}'."
             )
 
         headings = list(headings)
         if not headings:
             raise RuntimeError(
-                f"La tabla '{nombre_tabla}' no devolvió encabezados desde ETABS."
+                f"La tabla '{tabla_destino.nombre}' no devolvió encabezados desde ETABS."
             )
 
         if len(data) % len(headings) != 0:
             raise RuntimeError(
                 "El tamaño de los datos no coincide con las columnas recibidas "
-                f"para la tabla '{nombre_tabla}'."
+                f"para la tabla '{tabla_destino.nombre}'."
             )
 
         filas = len(data) // len(headings)
@@ -199,3 +223,86 @@ def _normalizar_formatos(formatos: str | Iterable[str]) -> list[str]:
             normalizados.append(formato_limpio)
 
     return normalizados
+
+
+def _resolver_tabla(nombre_solicitado: str, disponibles: list[TablaDisponible]) -> TablaDisponible:
+    """Encuentra la tabla solicitada comparando por nombre o key.
+
+    Se busca coincidencia exacta o parcial (case-insensitive) primero sobre
+    los nombres de pantalla y luego sobre las keys internas. Si hay múltiples
+    coincidencias se solicita mayor precisión para evitar ambigüedades.
+    """
+
+    patron = nombre_solicitado.lower()
+
+    for tabla in disponibles:
+        if patron == tabla.nombre.lower() or patron == tabla.key.lower():
+            return tabla
+
+    coinciden_nombre = [t for t in disponibles if patron in t.nombre.lower()]
+    if len(coinciden_nombre) == 1:
+        return coinciden_nombre[0]
+
+    coinciden_key = [t for t in disponibles if patron in t.key.lower()]
+    if len(coinciden_key) == 1:
+        return coinciden_key[0]
+
+    candidatos = {t.nombre for t in coinciden_nombre + coinciden_key}
+    if candidatos:
+        raise ValueError(
+            "El nombre de tabla no es único. Especifícalo con mayor precisión. "
+            f"Coincidencias encontradas: {', '.join(sorted(candidatos))}"
+        )
+
+    raise ValueError(
+        f"La tabla '{nombre_solicitado}' no se encontró en ETABS. "
+        "Revisa que el modelo tenga resultados disponibles y que el nombre sea correcto."
+    )
+
+
+def _obtener_tablas_disponibles(sap_model) -> tuple[int, list[TablaDisponible]]:
+    """Obtiene las tablas usando ``GetAllTables`` y hace fallback a ``GetAvailableTables``.
+
+    La API de ETABS puede devolver keys y nombres (``GetAllTables``) o solo
+    nombres (``GetAvailableTables``). Este helper intenta primero la opción más
+    completa y normaliza los resultados para que siempre se disponga de un
+    listado de :class:`TablaDisponible`.
+    """
+
+    db_tables = sap_model.DatabaseTables
+
+    try:
+        ret, table_keys, table_names = db_tables.GetAllTables()
+    except Exception:
+        ret = None
+    else:
+        if ret is None:
+            ret = -1
+        if ret == 0 and table_names:
+            claves = list(table_keys or [])
+            if len(claves) < len(table_names):
+                claves.extend(table_names[len(claves) :])
+
+            tablas = [
+                TablaDisponible(key=str(key), nombre=str(nombre))
+                for key, nombre in zip(claves, table_names)
+            ]
+            if tablas:
+                return ret, tablas
+
+    resultado = db_tables.GetAvailableTables()
+    if not isinstance(resultado, tuple):  # pragma: no cover - defensive
+        raise TypeError(
+            "GetAvailableTables devolvió un tipo inesperado. Se esperaba un tuple."
+        )
+
+    if len(resultado) >= 2:
+        ret = resultado[0]
+        table_names = resultado[1] or []
+        tablas = [TablaDisponible(key=str(nombre), nombre=str(nombre)) for nombre in table_names]
+        return ret, tablas
+
+    raise ValueError(
+        "GetAvailableTables no devolvió información de tablas. "
+        "Revisa la conexión con ETABS o la versión de la API."
+    )
