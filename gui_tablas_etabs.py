@@ -28,8 +28,10 @@ from tkinter import (
     IntVar,
     Label,
     Listbox,
+    Radiobutton,
     StringVar,
     Tk,
+    Toplevel,
     ttk,
     filedialog,
     messagebox,
@@ -138,6 +140,7 @@ class _ExtractorGUI:
 
         frame_acciones = Frame(self.root)
         frame_acciones.pack(side=TOP, pady=15)
+        Button(frame_acciones, text="Grヴficas", command=self._abrir_graficas).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Previsualizar", command=self._previsualizar).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Extraer", command=self._extraer).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Cerrar", command=self.root.destroy).pack(side=LEFT, padx=10)
@@ -433,6 +436,223 @@ class _ExtractorGUI:
             _flatten_strings(elem)
 
         return ret, nombres
+
+    # Seccion de grГЎficas -------------------------------------------------
+
+    def _abrir_graficas(self) -> None:
+        """Abre un cuadro simple para elegir la grГЎfica a generar."""
+        if not self._asegurar_sapmodel():
+            return
+
+        popup = Toplevel(self.root)
+        popup.title("GrГЎficas")
+
+        Label(popup, text="Elige la tabla a graficar").pack(anchor="w", padx=10, pady=(10, 5))
+
+        opciones = [
+            ("Story Drifts (deriva maxima por piso)", "story_drifts"),
+            ("Story Forces", "story_forces"),
+            ("Diaphragm Accelerations", "diaphragm_acc"),
+            ("Story Accelerations", "story_accel"),
+            ("Story Max Over Avg Displacement", "story_max_over_avg_disp"),
+            ("Story Max Over Avg Drift", "story_max_over_avg_drift"),
+        ]
+        self._grafica_opcion = StringVar(value=opciones[0][1])
+        for texto, valor in opciones:
+            Radiobutton(popup, text=texto, variable=self._grafica_opcion, value=valor).pack(
+                anchor="w", padx=10
+            )
+
+        Label(popup, text="Direcciones a incluir (coma separada, ej. X,Y) - deja vacio para todas:").pack(anchor="w", padx=10, pady=(6, 0))
+        self._grafica_direcciones_lista = StringVar(value="")
+        Entry(popup, textvariable=self._grafica_direcciones_lista, width=20).pack(anchor="w", padx=10, pady=(0, 4))
+
+        Label(popup, text="Direccion preferida (opcional, ej. X o Y):").pack(anchor="w", padx=10, pady=(2, 0))
+        self._grafica_direccion = StringVar(value="")
+        Entry(popup, textvariable=self._grafica_direccion, width=12).pack(anchor="w", padx=10, pady=(0, 6))
+
+        Label(
+            popup,
+            text=(
+                "Usa las selecciones actuales de casos/combos para filtrar.\n"
+                "La grГЎfica se abre en una ventana de Matplotlib."
+            ),
+            fg="gray",
+            justify=LEFT,
+        ).pack(anchor="w", padx=10, pady=5)
+
+        botones = Frame(popup)
+        botones.pack(pady=10)
+        Button(botones, text="Graficar", command=lambda: self._graficar_seleccion(popup)).pack(
+            side=LEFT, padx=5
+        )
+        Button(botones, text="Cerrar", command=popup.destroy).pack(side=LEFT, padx=5)
+
+    def _graficar_seleccion(self, popup: Toplevel) -> None:
+        opcion = getattr(self, "_grafica_opcion", StringVar(value="")).get()
+        if opcion == "story_drifts":
+            self._graficar_story_drifts()
+        elif opcion in {"story_forces", "diaphragm_acc", "story_accel", "story_max_over_avg_disp", "story_max_over_avg_drift"}:
+            self._graficar_generico(opcion)
+        else:
+            messagebox.showinfo("Pendiente", "Todavia no hay graficas para esa opcion.")
+        popup.lift()
+
+    def _graficar_story_drifts(self) -> None:
+        """Genera la grГЎfica de derivas mГЎximas por piso usando Matplotlib."""
+        try:
+            from graficar_tablas_etabs import plot_max_story_drift
+        except Exception as exc:
+            messagebox.showerror(
+                "Matplotlib requerido",
+                f"No se pudo importar la funciГіn de grГЎfico: {exc}\n"
+                "Instala matplotlib (pip install matplotlib) e intenta de nuevo.",
+            )
+            return
+
+        if not self._asegurar_sapmodel():
+            return
+
+        casos, combos = self._obtener_casos_combos_seleccionados()
+        if not self._usar_casos.get():
+            casos = []
+        if not self._usar_combos.get():
+            combos = []
+
+        direcciones = []
+        if hasattr(self, "_grafica_direcciones_lista"):
+            raw_dirs = (self._grafica_direcciones_lista.get() or "")
+            direcciones = [d.strip() for d in raw_dirs.split(",") if d.strip()]
+
+        prefer_dir = (self._grafica_direccion.get() or "").strip() if hasattr(self, "_grafica_direccion") else ""
+
+        try:
+            tablas = extraer_tablas_etabs(
+                self.sap_model,
+                tablas=["Story Drifts"],
+                carpeta_destino=None,
+                casos=casos,
+                combinaciones=combos,
+                debug_log=False,
+            )
+        except Exception as exc:  # pragma: no cover - interacciГіn COM
+            messagebox.showerror("Error", f"No se pudo leer la tabla para graficar:\n{exc}")
+            return
+
+        try:
+            plot_max_story_drift(
+                tablas,
+                table_name="Story Drifts",
+                cases=list(casos) + list(combos),
+                directions=direcciones or None,
+                prefer_direction=prefer_dir or None,
+                title="Maximum Story Drifts",
+                xlabel="Drift, Unitless",
+                show=True,
+                block=False,
+            )
+        except Exception as exc:
+            messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
+            return
+
+        messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
+
+    def _graficar_generico(self, opcion: str) -> None:
+        """Graficador genГ©rico para tablas tipo Story."""
+        try:
+            from graficar_tablas_etabs import plot_story_columns
+        except Exception as exc:
+            messagebox.showerror(
+                "Matplotlib requerido",
+                f"No se pudo importar la funciГіn de grГЎfico: {exc}\n"
+                "Instala matplotlib (pip install matplotlib) e intenta de nuevo.",
+            )
+            return
+
+        if not self._asegurar_sapmodel():
+            return
+
+        casos, combos = self._obtener_casos_combos_seleccionados()
+        if not self._usar_casos.get():
+            casos = []
+        if not self._usar_combos.get():
+            combos = []
+
+        direcciones = []
+        if hasattr(self, "_grafica_direcciones_lista"):
+            raw_dirs = (self._grafica_direcciones_lista.get() or "")
+            direcciones = [d.strip() for d in raw_dirs.split(",") if d.strip()]
+
+        prefer_dir = (self._grafica_direccion.get() or "").strip() if hasattr(self, "_grafica_direccion") else ""
+
+        config = {
+            "story_forces": {
+                "tabla": "Story Forces",
+                "candidatos": ["P", "V2", "V3", "T", "M2", "M3", "MX", "MY", "VX", "VY"],
+                "xlabel": "Fuerza / Momento",
+                "titulo": "Story Forces",
+            },
+            "diaphragm_acc": {
+                "tabla": "Diaphragm Accelerations",
+                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY", "UZ"],
+                "xlabel": "Acceleration",
+                "titulo": "Diaphragm Accelerations",
+            },
+            "story_accel": {
+                "tabla": "Story Accelerations",
+                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY", "UZ"],
+                "xlabel": "Acceleration",
+                "titulo": "Story Accelerations",
+            },
+            "story_max_over_avg_disp": {
+                "tabla": "Story Max Over Avg Displacement",
+                "candidatos": ["Max Displacement", "Avg Displacement", "Ratio"],
+                "xlabel": "Displacement",
+                "titulo": "Story Max Over Avg Displacement",
+            },
+            "story_max_over_avg_drift": {
+                "tabla": "Story Max Over Avg Drift",
+                "candidatos": ["Max Drift", "Avg Drift", "Ratio"],
+                "xlabel": "Drift",
+                "titulo": "Story Max Over Avg Drift",
+            },
+        }.get(opcion)
+
+        if not config:
+            messagebox.showinfo("Pendiente", "No hay grГЎfica configurada para esta opciГіn.")
+            return
+
+        try:
+            tablas = extraer_tablas_etabs(
+                self.sap_model,
+                tablas=[config["tabla"]],
+                carpeta_destino=None,
+                casos=casos,
+                combinaciones=combos,
+                debug_log=False,
+            )
+        except Exception as exc:  # pragma: no cover - interacciГіn COM
+            messagebox.showerror("Error", f"No se pudo leer la tabla para graficar:\n{exc}")
+            return
+
+        try:
+            plot_story_columns(
+                tablas,
+                table_name=config["tabla"],
+                value_candidates=config["candidatos"],
+                cases=list(casos) + list(combos),
+                directions=direcciones or None,
+                prefer_direction=prefer_dir or None,
+                title=config["titulo"],
+                xlabel=config["xlabel"],
+                show=True,
+                block=False,
+            )
+        except Exception as exc:
+            messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
+            return
+
+        messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
 
     def run(self) -> None:
         self.root.mainloop()
