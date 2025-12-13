@@ -65,6 +65,10 @@ class _ExtractorGUI:
         self._casos: list[str] = []
         self._combos: list[str] = []
         self._estado_cc = StringVar(value="")
+        self._grafica_opcion = StringVar(value="story_drifts")
+        self._grafica_direcciones_lista = StringVar(value="")
+        self._grafica_direccion = StringVar(value="")
+        self._grafica_grises = IntVar(value=0)
 
         self._construir_layout()
         self._cargar_tablas_disponibles()
@@ -75,7 +79,7 @@ class _ExtractorGUI:
             self.root,
             text=(
                 "Selecciona las tablas que quieres extraer. "
-                "Los formatos elegidos se guardarán en la carpeta indicada."
+                "Los formatos elegidos se guardaran en la carpeta indicada."
             ),
             wraplength=480,
             justify=LEFT,
@@ -90,10 +94,10 @@ class _ExtractorGUI:
             columns=("tabla",),
             show="tree",
             selectmode="none",
-            height=16,
+            height=14,
         )
         self.lista_tablas.column("#0", width=240, anchor="w")
-        self.lista_tablas.heading("#0", text="Categoría")
+        self.lista_tablas.heading("#0", text="Categoria")
         self.lista_tablas.column("tabla", anchor="w", width=260)
         self.lista_tablas.heading("tabla", text="Tabla")
         self.lista_tablas.pack(side=LEFT, fill=BOTH, expand=True)
@@ -126,8 +130,8 @@ class _ExtractorGUI:
         Checkbutton(frame_cc_opts, text="Aplicar combinaciones seleccionadas", variable=self._usar_combos).pack(side=LEFT, padx=5)
 
         frame_formatos = Frame(self.root)
-        frame_formatos.pack(fill="x", padx=10, pady=10)
-        Label(frame_formatos, text="Formatos de exportación:").pack(side=LEFT)
+        frame_formatos.pack(fill="x", padx=10, pady=8)
+        Label(frame_formatos, text="Formatos de exportacion:").pack(side=LEFT)
         Checkbutton(frame_formatos, text="CSV", variable=self._formato_csv).pack(side=LEFT, padx=5)
         Checkbutton(frame_formatos, text="TXT", variable=self._formato_txt).pack(side=LEFT, padx=5)
 
@@ -138,9 +142,40 @@ class _ExtractorGUI:
         self.entry_ruta.pack(side=LEFT, padx=5, fill="x", expand=True)
         Button(frame_ruta, text="Examinar", command=self._seleccionar_carpeta).pack(side=LEFT)
 
+        # Panel de graficas integrado
+        panel_g = Frame(self.root, bd=1, relief="groove")
+        panel_g.pack(fill="x", padx=10, pady=8)
+
+        Label(panel_g, text="Elige la tabla a graficar").grid(row=0, column=0, columnspan=2, sticky="w", padx=6, pady=(6, 2))
+
+        opciones = [
+            ("Story Drifts (deriva maxima por piso)", "story_drifts"),
+            ("Story Forces", "story_forces"),
+            ("Diaphragm Accelerations", "diaphragm_acc"),
+            ("Story Accelerations", "story_accel"),
+            ("Story Max Over Avg Displacement", "story_max_over_avg_disp"),
+            ("Story Max Over Avg Drift", "story_max_over_avg_drift"),
+        ]
+        fila = 1
+        for texto, valor in opciones:
+            Radiobutton(panel_g, text=texto, variable=self._grafica_opcion, value=valor).grid(row=fila, column=0, columnspan=2, sticky="w", padx=10)
+            fila += 1
+
+        Label(panel_g, text="Direcciones a incluir (coma, ej. X,Y) - vacio: todas").grid(row=fila, column=0, sticky="w", padx=10, pady=(6, 0))
+        Entry(panel_g, textvariable=self._grafica_direcciones_lista, width=20).grid(row=fila, column=1, sticky="w", padx=4, pady=(6, 0))
+        fila += 1
+
+        Label(panel_g, text="Direccion preferida (opcional, ej. X o Y):").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
+        Entry(panel_g, textvariable=self._grafica_direccion, width=12).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
+        fila += 1
+
+        Checkbutton(panel_g, text="Mostrar en escala de grises", variable=self._grafica_grises).grid(row=fila, column=0, columnspan=2, sticky="w", padx=10, pady=(6, 6))
+        fila += 1
+
+        Button(panel_g, text="Graficar", command=lambda: self._graficar_seleccion(None)).grid(row=fila, column=0, sticky="w", padx=10, pady=(0, 8))
+
         frame_acciones = Frame(self.root)
-        frame_acciones.pack(side=TOP, pady=15)
-        Button(frame_acciones, text="Grヴficas", command=self._abrir_graficas).pack(side=LEFT, padx=10)
+        frame_acciones.pack(side=TOP, pady=10)
         Button(frame_acciones, text="Previsualizar", command=self._previsualizar).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Extraer", command=self._extraer).pack(side=LEFT, padx=10)
         Button(frame_acciones, text="Cerrar", command=self.root.destroy).pack(side=LEFT, padx=10)
@@ -189,19 +224,43 @@ class _ExtractorGUI:
 
         grupos = self._agrupar_tablas(tablas)
 
-        for categoria, tablas_cat in grupos.items():
-            parent_id = self.lista_tablas.insert("", END, text=categoria, open=False)
+        for tipo, grupos_primera in grupos.items():
+            tipo_id = self.lista_tablas.insert("", END, text=tipo, open=False)
 
-            for tabla in tablas_cat:
-                var = IntVar(value=0)
-                self._tabla_vars.append((tabla, var))
-                item_id = self.lista_tablas.insert(
-                    parent_id, END, text="", values=(f"[ ] {tabla}",), tags=(tabla,)
-                )
-                self._tabla_nodes[tabla] = item_id
-                self.lista_tablas.tag_bind(
-                    tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t)
-                )
+            for primera, subgrupos in grupos_primera.items():
+                primera_id = self.lista_tablas.insert(tipo_id, END, text=primera, open=False)
+
+                # Si solo hay un subgrupo y una tabla, poner tabla directamente bajo la primera
+                if len(subgrupos) == 1:
+                    unica_sub, tablas_cat = next(iter(subgrupos.items()))
+                    if len(tablas_cat) == 1:
+                        tabla = tablas_cat[0]
+                        var = IntVar(value=0)
+                        self._tabla_vars.append((tabla, var))
+                        item_id = self.lista_tablas.insert(
+                            primera_id, END, text="", values=(f"[ ] {tabla}",), tags=(tabla,)
+                        )
+                        self._tabla_nodes[tabla] = item_id
+                        self.lista_tablas.tag_bind(
+                            tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t)
+                        )
+                        continue
+
+                for subcat, tablas_cat in subgrupos.items():
+                    parent_id = primera_id
+                    if subcat != "_sin_sub" and len(tablas_cat) > 1:
+                        parent_id = self.lista_tablas.insert(primera_id, END, text=subcat, open=False)
+
+                    for tabla in tablas_cat:
+                        var = IntVar(value=0)
+                        self._tabla_vars.append((tabla, var))
+                        item_id = self.lista_tablas.insert(
+                            parent_id, END, text="", values=(f"[ ] {tabla}",), tags=(tabla,)
+                        )
+                        self._tabla_nodes[tabla] = item_id
+                        self.lista_tablas.tag_bind(
+                            tabla, "<ButtonRelease-1>", lambda e, v=var, t=tabla: self._toggle_tabla(v, t)
+                        )
 
     def _reconectar(self) -> None:
         self.sap_model = None
@@ -234,32 +293,41 @@ class _ExtractorGUI:
         if carpeta:
             self._ruta_destino.set(carpeta)
 
-    def _agrupar_tablas(self, tablas: list[str]) -> dict[str, list[str]]:
-        """Agrupa las tablas por categoría derivada (heurística simple)."""
-        grupos: dict[str, list[str]] = {}
+    def _clasificar_tipo_tabla(self, nombre: str) -> str:
+        """Clasifica heurísticamente la tabla como Input, Output o Definiciones."""
+        n = nombre.lower()
+        if any(k in n for k in ["result", "force", "drift", "displacement", "accel", "reaction", "shear", "moment"]):
+            return "Outputs"
+        if any(k in n for k in ["definition", "property", "section", "material", "overwrites", "preference", "setting", "config"]):
+            return "Definiciones"
+        if any(k in n for k in ["load", "pattern", "case", "combo", "assign", "assignment", "frame", "joint", "shell", "column", "beam", "brace", "deck", "wall"]):
+            return "Inputs"
+        return "Otros"
+
+    def _agrupar_tablas(self, tablas: list[str]) -> dict[str, dict[str, dict[str, list[str]]]]:
+        """Agrupa por tipo (Input/Output/Definiciones) y luego por primera y segunda palabra."""
+        grupos: dict[str, dict[str, dict[str, list[str]]]] = {}
 
         for nombre in sorted(tablas, key=str.lower):
-            categoria = self._extraer_categoria(nombre)
-            grupos.setdefault(categoria, []).append(nombre)
+            tipo = self._clasificar_tipo_tabla(nombre)
+            texto = nombre.replace(":", " ")
+            tokens = [t for t in texto.split() if t]
+            primera = tokens[0] if tokens else "Otras"
+            segunda = tokens[1] if len(tokens) > 1 else "_sin_sub"
+            grupos.setdefault(tipo, {}).setdefault(primera, {}).setdefault(segunda, []).append(nombre)
 
-        # Ordenar tablas dentro de cada categoría
-        for cat in list(grupos):
-            grupos[cat] = sorted(grupos[cat], key=str.lower)
+        # Ordenar alfabéticamente
+        grupos_ordenados: dict[str, dict[str, dict[str, list[str]]]] = {}
+        for tipo, sub1 in sorted(grupos.items(), key=lambda kv: kv[0].lower()):
+            primer_ordenado: dict[str, dict[str, list[str]]] = {}
+            for primera, sub2 in sorted(sub1.items(), key=lambda kv: kv[0].lower()):
+                segundo_ordenado: dict[str, list[str]] = {}
+                for segunda, lista in sorted(sub2.items(), key=lambda kv: kv[0].lower()):
+                    segundo_ordenado[segunda] = sorted(lista, key=str.lower)
+                primer_ordenado[primera] = segundo_ordenado
+            grupos_ordenados[tipo] = primer_ordenado
 
-        return dict(sorted(grupos.items(), key=lambda kv: kv[0].lower()))
-
-    @staticmethod
-    def _extraer_categoria(nombre_tabla: str) -> str:
-        """Deriva una categoría simple a partir del nombre de tabla."""
-        if ":" in nombre_tabla:
-            return nombre_tabla.split(":", 1)[0].strip()
-
-        tokens = nombre_tabla.split()
-        if len(tokens) >= 2:
-            return " ".join(tokens[:2])
-        if tokens:
-            return tokens[0]
-        return "Otras"
+        return grupos_ordenados
 
     def _extraer(self) -> None:
         if not self._asegurar_sapmodel():
@@ -481,6 +549,11 @@ class _ExtractorGUI:
             justify=LEFT,
         ).pack(anchor="w", padx=10, pady=5)
 
+        self._grafica_grises = IntVar(value=0)
+        Checkbutton(popup, text="Mostrar en escala de grises", variable=self._grafica_grises).pack(
+            anchor="w", padx=10, pady=2
+        )
+
         botones = Frame(popup)
         botones.pack(pady=10)
         Button(botones, text="Graficar", command=lambda: self._graficar_seleccion(popup)).pack(
@@ -546,6 +619,7 @@ class _ExtractorGUI:
                 cases=list(casos) + list(combos),
                 directions=direcciones or None,
                 prefer_direction=prefer_dir or None,
+                grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
                 title="Maximum Story Drifts",
                 xlabel="Drift, Unitless",
                 show=True,
@@ -636,18 +710,47 @@ class _ExtractorGUI:
             return
 
         try:
-            plot_story_columns(
-                tablas,
-                table_name=config["tabla"],
-                value_candidates=config["candidatos"],
-                cases=list(casos) + list(combos),
-                directions=direcciones or None,
-                prefer_direction=prefer_dir or None,
-                title=config["titulo"],
-                xlabel=config["xlabel"],
-                show=True,
-                block=False,
-            )
+            if opcion == "story_forces":
+                plot_story_columns(
+                    tablas,
+                    table_name=config["tabla"],
+                    value_candidates=["V2", "V3", "VX", "VY"],
+                    cases=list(casos) + list(combos),
+                    directions=direcciones or None,
+                    prefer_direction=prefer_dir or None,
+                    grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
+                    title="Story Forces - Cortantes",
+                    xlabel="Shear",
+                    show=True,
+                    block=False,
+                )
+                plot_story_columns(
+                    tablas,
+                    table_name=config["tabla"],
+                    value_candidates=["M2", "M3", "MX", "MY"],
+                    cases=list(casos) + list(combos),
+                    directions=direcciones or None,
+                    prefer_direction=prefer_dir or None,
+                    grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
+                    title="Story Forces - Momentos",
+                    xlabel="Moment",
+                    show=True,
+                    block=False,
+                )
+            else:
+                plot_story_columns(
+                    tablas,
+                    table_name=config["tabla"],
+                    value_candidates=config["candidatos"],
+                    cases=list(casos) + list(combos),
+                    directions=direcciones or None,
+                    prefer_direction=prefer_dir or None,
+                    grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
+                    title=config["titulo"],
+                    xlabel=config["xlabel"],
+                    show=True,
+                    block=False,
+                )
         except Exception as exc:
             messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
             return

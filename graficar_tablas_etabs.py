@@ -103,6 +103,7 @@ def plot_max_story_drift(
     xlabel: str = "Drift, Unitless",
     colors: Mapping[str, str] | None = None,
     markers: Sequence[str] | None = None,
+    grayscale: bool = False,
     show: bool = False,
     block: bool = True,
     save_path: str | Path | None = None,
@@ -132,6 +133,8 @@ def plot_max_story_drift(
         Diccionario serie->color para forzar colores.
     markers : Sequence[str], optional
         Secuencia de marcadores para las series; se ciclan si hay mas series.
+    grayscale : bool
+        Si True usa una paleta en escala de grises y marcador negro; por defecto va a color.
     show : bool
         Si es True llama a plt.show() al final.
     block : bool
@@ -180,8 +183,12 @@ def plot_max_story_drift(
     if ax is None:
         _, ax = plt.subplots(figsize=(5, 8))
 
-    palette_default = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#00897b"]
-    marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
+    if grayscale:
+        palette_default = ["#000000", "#555555", "#888888", "#AAAAAA", "#CCCCCC"]
+        marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
+    else:
+        palette_default = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#00897b"]
+        marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
 
     for idx, (serie, bloque) in enumerate(df_trab.groupby("__serie__")):
         serie_colors = colors or {}
@@ -235,6 +242,7 @@ def plot_story_columns(
     xlabel: str | None = None,
     colors: Mapping[str, str] | None = None,
     markers: Sequence[str] | None = None,
+    grayscale: bool = False,
     show: bool = False,
     block: bool = True,
     save_path: str | Path | None = None,
@@ -289,8 +297,12 @@ def plot_story_columns(
     if ax is None:
         _, ax = plt.subplots(figsize=(5, 8))
 
-    palette_default = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#00897b"]
-    marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
+    if grayscale:
+        palette_default = ["#000000", "#555555", "#888888", "#AAAAAA", "#CCCCCC"]
+        marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
+    else:
+        palette_default = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#00897b"]
+        marker_default = markers or ["o", "s", "^", "D", "v", "<", ">"]
 
     series_labels: list[tuple[str, str]] = []  # (columna, serie_base)
     for col in cols_presentes:

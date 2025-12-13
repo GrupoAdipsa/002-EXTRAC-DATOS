@@ -1,0 +1,3 @@
+Carpeta destino:").pack(side=LEFT)
+        self.entry_ruta = Entry(frame_ruta, textvariable=self._ruta_destino, width=40)
+        self.entry_ruta.pack(side=LEF
