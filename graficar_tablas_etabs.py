@@ -114,12 +114,14 @@ def plot_max_story_drift(
     story_order: Sequence[str] | None = None,
     title: str = "Maximum Story Drifts",
     xlabel: str = "Drift, Unitless",
+    drift_limits: Iterable[float] | None = None,
     colors: Mapping[str, str] | None = None,
     markers: Sequence[str] | None = None,
     grayscale: bool = False,
     show: bool = False,
     block: bool = True,
     save_path: str | Path | None = None,
+    interactive_controls: bool = True,
     ax=None,
 ):
     """Genera una grafica de derivas maximas por piso.
@@ -152,6 +154,8 @@ def plot_max_story_drift(
         Si es True llama a plt.show() al final.
     block : bool
         Se pasa a plt.show(block=block) cuando show=True. Ajusta a False si llamas desde una GUI y no quieres bloquear.
+    drift_limits : Iterable[float], optional
+        Valores de deriva de referencia para dibujar lineas verticales (se trazan ±valor).
     save_path : str or Path, optional
         Ruta para guardar la figura (png, svg, etc). No se guarda si es None.
     ax : matplotlib Axes, optional
@@ -187,14 +191,8 @@ def plot_max_story_drift(
     if df_trab.empty:
         raise ValueError("La tabla filtrada quedo vacia; revisa casos/direcciones o datos de entrada.")
 
-    # Serie = Caso - DriftDir - JointLabel
-    case_col = cols.get("case")
-    df_trab["__serie__"] = df_trab.apply(
-        lambda r: f"{r[case_col] if case_col in r else ''}-"
-                  f"{r['__drift_dir__'] if '__drift_dir__' in r else ''}-"
-                  f"{r[joint_col]}",
-        axis=1,
-    )
+    # Serie = caso/direccion (segun columnas disponibles)
+    df_trab["__serie__"] = df_trab.apply(lambda r: _serie_label(r, cols), axis=1)
 
     historias = df_trab[cols["story"]].astype(str).unique().tolist()
     orden = _ordenar_stories(historias, story_order)
@@ -238,7 +236,22 @@ def plot_max_story_drift(
     ax.legend(loc="best")
     ax.set_ylim(-0.5, len(orden) - 0.5)
 
+    if drift_limits:
+        etiqueta_usada = False
+        for val in drift_limits:
+            try:
+                v = abs(float(val))
+            except Exception:
+                continue
+            label = f"Limite {v}" if not etiqueta_usada else None
+            etiqueta_usada = etiqueta_usada or label is not None
+            ax.axvline(x=v, color="#666666", linestyle=":", linewidth=1.4, label=label)
+            ax.axvline(x=-v, color="#666666", linestyle=":", linewidth=1.0)
+
     plt.tight_layout()
+
+    if interactive_controls and ax.figure is not None:
+        _abrir_panel_estilo(ax.get_lines(), ax.figure)
 
     if save_path:
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -310,6 +323,7 @@ def plot_story_columns(
     show: bool = False,
     block: bool = True,
     save_path: str | Path | None = None,
+    interactive_controls: bool = True,
     ax=None,
 ):
     """Grafica una o varias columnas numericas contra Story."""
@@ -406,6 +420,9 @@ def plot_story_columns(
 
     plt.tight_layout()
 
+    if interactive_controls and ax.figure is not None:
+        _abrir_panel_estilo(ax.get_lines(), ax.figure)
+
     if save_path:
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         ax.figure.savefig(save_path, dpi=200)
@@ -426,6 +443,7 @@ def plot_joint_drifts(
     cases: Iterable[str] | None = None,
     title: str = "Joint Drifts",
     xlabel: str = "Drift, Unitless",
+    drift_limits: Iterable[float] | None = None,
     grayscale: bool = False,
     show: bool = False,
     block: bool = True,
@@ -598,7 +616,7 @@ def plot_joint_drifts(
 
     plt.tight_layout()
 
-    if interactive_controls and fig is not None and show:
+    if interactive_controls and fig is not None:
         _abrir_panel_estilo(ax.get_lines(), fig)
 
     if save_path:

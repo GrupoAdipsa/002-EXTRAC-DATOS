@@ -70,9 +70,9 @@ class _ExtractorGUI:
         self._estado_cc = StringVar(value="")
         self._grafica_opcion = StringVar(value="story_drifts")
         self._grafica_direcciones_lista = StringVar(value="")
-        self._grafica_direccion = StringVar(value="")
         self._grafica_grises = IntVar(value=0)
         self._joint_lista = StringVar(value="")
+        self._grafica_limits = StringVar(value="")
 
         self._construir_layout()
         self._cargar_tablas_disponibles()
@@ -170,12 +170,12 @@ class _ExtractorGUI:
         Entry(panel_g, textvariable=self._grafica_direcciones_lista, width=20).grid(row=fila, column=1, sticky="w", padx=4, pady=(6, 0))
         fila += 1
 
-        Label(panel_g, text="Direccion preferida (opcional, ej. X o Y):").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
-        Entry(panel_g, textvariable=self._grafica_direccion, width=12).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
-        fila += 1
-
         Label(panel_g, text="Joints a incluir (coma, ej. J1,J2) - vacio: todos").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
         Entry(panel_g, textvariable=self._joint_lista, width=20).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
+        fila += 1
+
+        Label(panel_g, text="Lineas verticales drift (coma, ej. 0.002,0.003) - vacio: sin lineas").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
+        Entry(panel_g, textvariable=self._grafica_limits, width=20).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
         fila += 1
 
         Checkbutton(panel_g, text="Mostrar en escala de grises", variable=self._grafica_grises).grid(row=fila, column=0, columnspan=2, sticky="w", padx=10, pady=(6, 6))
@@ -614,7 +614,17 @@ class _ExtractorGUI:
             raw_dirs = (self._grafica_direcciones_lista.get() or "")
             direcciones = [d.strip() for d in raw_dirs.split(",") if d.strip()]
 
-        prefer_dir = (self._grafica_direccion.get() or "").strip() if hasattr(self, "_grafica_direccion") else ""
+        limits = []
+        if hasattr(self, "_grafica_limits"):
+            raw_limits = (self._grafica_limits.get() or "")
+            for val in raw_limits.split(","):
+                val = val.strip()
+                if not val:
+                    continue
+                try:
+                    limits.append(float(val))
+                except Exception:
+                    continue
 
         try:
             tablas = extraer_tablas_etabs(
@@ -635,10 +645,11 @@ class _ExtractorGUI:
                 table_name="Story Drifts",
                 cases=list(casos) + list(combos),
                 directions=direcciones or None,
-                prefer_direction=prefer_dir or None,
+                prefer_direction=None,
                 grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
                 title="Maximum Story Drifts",
                 xlabel="Drift, Unitless",
+                drift_limits=limits or None,
                 show=True,
                 block=False,
             )
@@ -647,7 +658,6 @@ class _ExtractorGUI:
             messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
             return
 
-        messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
 
     def _graficar_joint_drifts(self) -> None:
         """Grafica Joint Drifts permitiendo filtrar por joints y direcciones."""
@@ -676,6 +686,17 @@ class _ExtractorGUI:
             direcciones = [d.strip() for d in raw_dirs.split(",") if d.strip()]
 
         prefer_dir = (self._grafica_direccion.get() or "").strip() if hasattr(self, "_grafica_direccion") else ""
+        limits = []
+        if hasattr(self, "_grafica_limits"):
+            raw_limits = (self._grafica_limits.get() or "")
+            for val in raw_limits.split(","):
+                val = val.strip()
+                if not val:
+                    continue
+                try:
+                    limits.append(float(val))
+                except Exception:
+                    continue
 
         joints = []
         if hasattr(self, "_joint_lista"):
@@ -701,12 +722,13 @@ class _ExtractorGUI:
                 table_name="Joint Drifts",
                 joints=joints or None,
                 directions=direcciones or None,
-                prefer_direction=prefer_dir or None,
+                prefer_direction=None,
                 value_candidates=["DriftX", "DriftY", "Drift"],
                 cases=list(casos) + list(combos),
                 grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
                 title="Joint Drifts",
                 xlabel="Drift, Unitless",
+                drift_limits=limits or None,
                 show=True,
                 block=False,
                 interactive_controls=True,
@@ -753,13 +775,13 @@ class _ExtractorGUI:
             },
             "diaphragm_acc": {
                 "tabla": "Diaphragm Accelerations",
-                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY", "UZ"],
+                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY"],
                 "xlabel": "Acceleration",
                 "titulo": "Diaphragm Accelerations",
             },
             "story_accel": {
                 "tabla": "Story Accelerations",
-                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY", "UZ"],
+                "candidatos": ["Accel", "Acceleration", "U1", "U2", "U3", "UX", "UY"],
                 "xlabel": "Acceleration",
                 "titulo": "Story Accelerations",
             },
@@ -843,7 +865,6 @@ class _ExtractorGUI:
             messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
             return
 
-        messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
 
     def _raise_matplotlib_window(self, ax) -> None:
         """Intenta traer al frente la ventana de Matplotlib cuando se usa backend Tk."""
