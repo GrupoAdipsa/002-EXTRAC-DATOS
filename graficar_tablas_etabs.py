@@ -14,7 +14,7 @@ from typing import Iterable, Mapping, Sequence
 import matplotlib.pyplot as plt
 import pandas as pd
 
-__all__ = ["plot_max_story_drift"]
+__all__ = ["plot_max_story_drift", "plot_story_columns", "plot_joint_drifts"]
 
 
 # Utilidades internas -----------------------------------------------------
@@ -42,14 +42,27 @@ def _resolver_df(tabla, table_name: str | None) -> pd.DataFrame:
 
 
 def _clave_col(nombre: str) -> str:
-    return nombre.strip().lower().replace(" ", "").replace("_", "")
+    # Normaliza claves eliminando separadores comunes para coincidencias flexibles
+    return (
+        nombre.strip()
+        .lower()
+        .replace(" ", "")
+        .replace("_", "")
+        .replace("-", "")
+        .replace(",", "")
+        .replace(":", "")
+        .replace(";", "")
+    )
 
 
 def _normalizar_columnas(df: pd.DataFrame) -> dict[str, str]:
-    claves = {"story": {"story", "nivel", "piso", "storyname"},
-             "case": {"outputcase", "case", "loadcase", "combo", "combination"},
-             "direction": {"direction", "dir", "eje", "orientacion"},
-             "drift": {"drift", "maxdrift", "maximumdrift", "storydrift", "deriva"}}
+    claves = {
+        "story": {"story", "nivel", "piso", "storyname", "storylabel"},
+        "joint": {"joint", "point", "label", "name", "node", "uniquename"},
+        "case": {"outputcase", "case", "loadcase", "combo", "combination"},
+        "direction": {"direction", "dir", "eje", "orientacion"},
+        "drift": {"drift", "maxdrift", "maximumdrift", "storydrift", "deriva"},
+    }
 
     res: dict[str, str] = {}
     for col in df.columns:
@@ -174,7 +187,14 @@ def plot_max_story_drift(
     if df_trab.empty:
         raise ValueError("La tabla filtrada quedo vacia; revisa casos/direcciones o datos de entrada.")
 
-    df_trab["__serie__"] = df_trab.apply(lambda r: _serie_label(r, cols), axis=1)
+    # Serie = Caso - DriftDir - JointLabel
+    case_col = cols.get("case")
+    df_trab["__serie__"] = df_trab.apply(
+        lambda r: f"{r[case_col] if case_col in r else ''}-"
+                  f"{r['__drift_dir__'] if '__drift_dir__' in r else ''}-"
+                  f"{r[joint_col]}",
+        axis=1,
+    )
 
     historias = df_trab[cols["story"]].astype(str).unique().tolist()
     orden = _ordenar_stories(historias, story_order)
@@ -228,6 +248,50 @@ def plot_max_story_drift(
         plt.show(block=block)
 
     return ax
+
+
+def _abrir_panel_estilo(lines, fig=None):
+    """Abre un panel Tk para ajustar grosor de linea y tamaño de marcador."""
+    try:
+        import tkinter as tk
+    except Exception:
+        return
+
+    if not lines:
+        return
+
+    lw0 = lines[0].get_linewidth()
+    ms0 = lines[0].get_markersize()
+
+    root = tk.Toplevel()
+    root.title("Estilo de graficas")
+    root.geometry("260x140")
+
+    tk.Label(root, text="Grosor de linea").pack(pady=(10, 2))
+    s_lw = tk.Scale(root, from_=0.5, to=6.0, resolution=0.1, orient="horizontal")
+    s_lw.set(lw0)
+    s_lw.pack(fill="x", padx=12)
+
+    tk.Label(root, text="Tamaño de marcador").pack(pady=(6, 2))
+    s_ms = tk.Scale(root, from_=2, to=18, resolution=0.5, orient="horizontal")
+    s_ms.set(ms0)
+    s_ms.pack(fill="x", padx=12)
+
+    def _apply(_evt=None):
+        for ln in lines:
+            ln.set_linewidth(s_lw.get())
+            ln.set_markersize(s_ms.get())
+        if fig:
+            fig.canvas.draw_idle()
+
+    s_lw.configure(command=_apply)
+    s_ms.configure(command=_apply)
+
+    try:
+        root.attributes("-topmost", True)
+        root.after(400, lambda: root.attributes("-topmost", False))
+    except Exception:
+        pass
 
 
 def plot_story_columns(
@@ -341,6 +405,201 @@ def plot_story_columns(
     ax.set_ylim(-0.5, len(orden) - 0.5)
 
     plt.tight_layout()
+
+    if save_path:
+        Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+        ax.figure.savefig(save_path, dpi=200)
+
+    if show:
+        plt.show(block=block)
+
+    return ax
+
+
+def plot_joint_drifts(
+    tabla,
+    table_name: str = "Joint Drifts",
+    joints: Iterable[str] | None = None,
+    directions: Iterable[str] | None = None,
+    prefer_direction: str | None = None,
+    value_candidates: Iterable[str] | None = None,
+    cases: Iterable[str] | None = None,
+    title: str = "Joint Drifts",
+    xlabel: str = "Drift, Unitless",
+    grayscale: bool = False,
+    show: bool = False,
+    block: bool = True,
+    save_path: str | Path | None = None,
+    interactive_controls: bool = True,
+    ax=None,
+):
+    """Grafica derivas por nodo (Joint Drifts) filtrando por joints/direcciones/casos."""
+
+    df = _resolver_df(tabla, table_name)
+    cols = _normalizar_columnas(df)
+
+    joint_col = None
+    story_col = None
+
+    # Preferir Label para joint, luego UniqueName
+    for col in df.columns:
+        key = _clave_col(col)
+        if key in {"label", "storylabel"}:
+            joint_col = col
+            break
+    if joint_col is None:
+        for col in df.columns:
+            key = _clave_col(col)
+            if key in {"joint", "point", "uniquename", "name", "node"}:
+                joint_col = col
+                break
+
+    # Detectar Story
+    for col in df.columns:
+        if "story" in _clave_col(col):
+            story_col = col
+            break
+
+    if not joint_col or not story_col:
+        raise ValueError("No se encontraron columnas de Story y/o Joint en la tabla proporcionada.")
+
+    # Detectar columnas de drift candidatas (DriftX, DriftY, Drift, etc.)
+    drift_cols = [c for c in df.columns if "drift" in _clave_col(c)]
+    if value_candidates:
+        cand_norm = {_clave_col(c): c for c in value_candidates}
+        drift_cols = [c for c in drift_cols if _clave_col(c) in cand_norm]
+
+    if directions:
+        dirs_norm = {str(d).strip().lower() for d in directions}
+        drift_cols = [
+            c
+            for c in drift_cols
+            if any(d in _clave_col(c) for d in dirs_norm)
+        ]
+    elif prefer_direction:
+        pref = str(prefer_direction).strip().lower()
+        drift_cols = [c for c in drift_cols if pref in _clave_col(c)] or drift_cols
+
+    if not drift_cols:
+        raise ValueError("No se encontraron columnas de drift (Drift, DriftX, DriftY, etc.) en la tabla proporcionada.")
+
+    df_trab = df.copy()
+    for col in drift_cols:
+        df_trab[col] = pd.to_numeric(df_trab[col], errors="coerce")
+    df_trab = df_trab.dropna(subset=drift_cols, how="all")
+
+    if joints:
+        permitidos = {str(j).strip().lower() for j in joints}
+        df_trab = df_trab[df_trab[joint_col].astype(str).str.strip().str.lower().isin(permitidos)]
+
+    if cases and cols.get("case"):
+        permitidos = {str(c).strip().lower() for c in cases}
+        df_trab = df_trab[df_trab[cols["case"]].astype(str).str.strip().str.lower().isin(permitidos)]
+
+    if df_trab.empty:
+        raise ValueError("La tabla filtrada quedo vacia; revisa joints/direcciones/casos o datos de entrada.")
+
+    # Expandir a formato largo por drift para etiquetar serie como Caso-Direccion-Joint
+    registros = []
+    for _, fila in df_trab.iterrows():
+        for col in drift_cols:
+            val = fila[col]
+            if pd.isna(val):
+                continue
+            dir_tag = "X" if "driftx" in _clave_col(col) else "Y" if "drifty" in _clave_col(col) else col
+            case_val = fila[cols["case"]] if cols.get("case") in fila else ""
+            serie = f"{case_val}-{dir_tag}-{fila[joint_col]}"
+            reg = fila.to_dict()
+            reg["__serie__"] = serie
+            reg["__drift_val__"] = val
+            reg["__drift_dir__"] = dir_tag
+            registros.append(reg)
+
+    df_trab = pd.DataFrame(registros)
+
+    # Orden por Story en eje vertical
+    stories = df_trab[story_col].astype(str).unique().tolist()
+    stories_orden = _ordenar_stories(stories, None)
+    y_ticks = list(range(len(stories_orden)))
+
+    fig = None
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(7, max(6, len(stories_orden) * 0.35 + 2)))
+    else:
+        fig = ax.figure
+
+    if grayscale:
+        palette_default = ["#000000", "#555555", "#888888", "#AAAAAA", "#CCCCCC"]
+        marker_default = ["o", "s", "^", "D", "v", "<", ">"]
+    else:
+        palette_default = ["#e53935", "#1e88e5", "#43a047", "#fdd835", "#8e24aa", "#00897b"]
+        marker_default = ["o", "s", "^", "D", "v", "<", ">"]
+
+    for idx, (serie, grupo) in enumerate(df_trab.groupby("__serie__")):
+        serie_por_story = (
+            grupo.groupby(story_col)["__drift_val__"]
+            .apply(lambda s: s.abs().max())
+            .reindex(stories_orden)
+        )
+
+        color = palette_default[idx % len(palette_default)]
+        marker = marker_default[idx % len(marker_default)]
+
+        ax.plot(
+            serie_por_story.values,
+            y_ticks,
+            marker=marker,
+            color=color,
+            label=serie,
+        )
+
+    # Promedio por direccion (X / Y)
+    if "__drift_dir__" in df_trab.columns:
+        for dir_tag, color in [("X", "#555555"), ("Y", "#999999")]:
+            sub = df_trab[df_trab["__drift_dir__"] == dir_tag]
+            if sub.empty:
+                continue
+            prom = (
+                sub.groupby(story_col)["__drift_val__"]
+                .apply(lambda s: s.abs().mean())
+                .reindex(stories_orden)
+            )
+            ax.plot(
+                prom.values,
+                y_ticks,
+                linestyle="--",
+                marker="",
+                color=color,
+                label=f"Promedio {dir_tag}",
+                linewidth=2,
+            )
+            p84 = (
+                sub.groupby(story_col)["__drift_val__"]
+                .apply(lambda s: s.abs().quantile(0.84))
+                .reindex(stories_orden)
+            )
+            ax.plot(
+                p84.values,
+                y_ticks,
+                linestyle=":",
+                marker="",
+                color=color,
+                label=f"P84 {dir_tag}",
+                linewidth=2,
+            )
+
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(stories_orden)
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
+    ax.grid(True, which="both", linestyle="--", alpha=0.5)
+    ax.legend(loc="best")
+    ax.set_ylim(-0.5, len(stories_orden) - 0.5)
+
+    plt.tight_layout()
+
+    if interactive_controls and fig is not None and show:
+        _abrir_panel_estilo(ax.get_lines(), fig)
 
     if save_path:
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)

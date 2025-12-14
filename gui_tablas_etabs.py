@@ -55,7 +55,10 @@ class _ExtractorGUI:
         self.sap_model = sap_model
         self.root = Tk()
         self.root.title("Exportar tablas ETABS")
-        self.root.geometry("520x520")
+        # Ajuste vertical para evitar que botones queden ocultos en ventanas no maximizadas
+        alto_ventana = max(720, self.root.winfo_screenheight() - 120)
+        self.root.geometry(f"620x{alto_ventana}")
+        self.root.minsize(600, 720)
 
         self._tabla_vars: list[tuple[str, IntVar]] = []
         self._tabla_nodes: dict[str, str] = {}
@@ -69,6 +72,7 @@ class _ExtractorGUI:
         self._grafica_direcciones_lista = StringVar(value="")
         self._grafica_direccion = StringVar(value="")
         self._grafica_grises = IntVar(value=0)
+        self._joint_lista = StringVar(value="")
 
         self._construir_layout()
         self._cargar_tablas_disponibles()
@@ -87,14 +91,14 @@ class _ExtractorGUI:
         info.pack(pady=10, padx=10, anchor="w")
 
         frame_tablas = Frame(self.root)
-        frame_tablas.pack(fill=BOTH, expand=True, padx=10)
+        frame_tablas.pack(fill=BOTH, expand=False, padx=10)
 
         self.lista_tablas = ttk.Treeview(
             frame_tablas,
             columns=("tabla",),
             show="tree",
             selectmode="none",
-            height=14,
+            height=10,
         )
         self.lista_tablas.column("#0", width=240, anchor="w")
         self.lista_tablas.heading("#0", text="Categoria")
@@ -155,6 +159,7 @@ class _ExtractorGUI:
             ("Story Accelerations", "story_accel"),
             ("Story Max Over Avg Displacement", "story_max_over_avg_disp"),
             ("Story Max Over Avg Drift", "story_max_over_avg_drift"),
+            ("Joint Drifts", "joint_drifts"),
         ]
         fila = 1
         for texto, valor in opciones:
@@ -167,6 +172,10 @@ class _ExtractorGUI:
 
         Label(panel_g, text="Direccion preferida (opcional, ej. X o Y):").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
         Entry(panel_g, textvariable=self._grafica_direccion, width=12).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
+        fila += 1
+
+        Label(panel_g, text="Joints a incluir (coma, ej. J1,J2) - vacio: todos").grid(row=fila, column=0, sticky="w", padx=10, pady=(4, 0))
+        Entry(panel_g, textvariable=self._joint_lista, width=20).grid(row=fila, column=1, sticky="w", padx=4, pady=(4, 0))
         fila += 1
 
         Checkbutton(panel_g, text="Mostrar en escala de grises", variable=self._grafica_grises).grid(row=fila, column=0, columnspan=2, sticky="w", padx=10, pady=(6, 6))
@@ -407,21 +416,25 @@ class _ExtractorGUI:
 
         casos, combos = self._obtener_casos_combos_seleccionados()
 
-        try:
-            resultado = extraer_tablas_etabs(
-                self.sap_model,
-                tablas=seleccionadas,
-                carpeta_destino=None,
-                casos=casos,
-                combinaciones=combos,
-                debug_log=True,
-            )
-        except Exception as exc:
-            messagebox.showerror("Error", f"No se pudieron previsualizar las tablas:\n{exc}")
-            return
+        resultado: dict[str, "pd.DataFrame"] = {}
+        errores: list[str] = []
+        for tabla in seleccionadas:
+            try:
+                parcial = extraer_tablas_etabs(
+                    self.sap_model,
+                    tablas=[tabla],
+                    carpeta_destino=None,
+                    casos=casos,
+                    combinaciones=combos,
+                    debug_log=True,
+                )
+                resultado.update(parcial)
+            except Exception as exc:
+                errores.append(f"{tabla}: {exc}")
 
         if not resultado:
-            messagebox.showinfo("Sin datos", "No se devolvieron datos para las tablas seleccionadas.")
+            texto_err = "\n".join(errores) if errores else "No se devolvieron datos."
+            messagebox.showinfo("Sin datos", texto_err)
             return
 
         popup = Tk()
@@ -524,6 +537,7 @@ class _ExtractorGUI:
             ("Story Accelerations", "story_accel"),
             ("Story Max Over Avg Displacement", "story_max_over_avg_disp"),
             ("Story Max Over Avg Drift", "story_max_over_avg_drift"),
+            ("Joint Drifts", "joint_drifts"),
         ]
         self._grafica_opcion = StringVar(value=opciones[0][1])
         for texto, valor in opciones:
@@ -561,15 +575,18 @@ class _ExtractorGUI:
         )
         Button(botones, text="Cerrar", command=popup.destroy).pack(side=LEFT, padx=5)
 
-    def _graficar_seleccion(self, popup: Toplevel) -> None:
+    def _graficar_seleccion(self, popup: Toplevel | None) -> None:
         opcion = getattr(self, "_grafica_opcion", StringVar(value="")).get()
         if opcion == "story_drifts":
             self._graficar_story_drifts()
+        elif opcion == "joint_drifts":
+            self._graficar_joint_drifts()
         elif opcion in {"story_forces", "diaphragm_acc", "story_accel", "story_max_over_avg_disp", "story_max_over_avg_drift"}:
             self._graficar_generico(opcion)
         else:
             messagebox.showinfo("Pendiente", "Todavia no hay graficas para esa opcion.")
-        popup.lift()
+        if popup:
+            popup.lift()
 
     def _graficar_story_drifts(self) -> None:
         """Genera la grГЎfica de derivas mГЎximas por piso usando Matplotlib."""
@@ -613,7 +630,7 @@ class _ExtractorGUI:
             return
 
         try:
-            plot_max_story_drift(
+            ax = plot_max_story_drift(
                 tablas,
                 table_name="Story Drifts",
                 cases=list(casos) + list(combos),
@@ -625,11 +642,79 @@ class _ExtractorGUI:
                 show=True,
                 block=False,
             )
+            self._raise_matplotlib_window(ax)
         except Exception as exc:
             messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
             return
 
         messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
+
+    def _graficar_joint_drifts(self) -> None:
+        """Grafica Joint Drifts permitiendo filtrar por joints y direcciones."""
+        try:
+            from graficar_tablas_etabs import plot_joint_drifts
+        except Exception as exc:
+            messagebox.showerror(
+                "Matplotlib requerido",
+                f"No se pudo importar la funcion de grafico: {exc}\n"
+                "Instala matplotlib (pip install matplotlib) e intenta de nuevo.",
+            )
+            return
+
+        if not self._asegurar_sapmodel():
+            return
+
+        casos, combos = self._obtener_casos_combos_seleccionados()
+        if not self._usar_casos.get():
+            casos = []
+        if not self._usar_combos.get():
+            combos = []
+
+        direcciones = []
+        if hasattr(self, "_grafica_direcciones_lista"):
+            raw_dirs = (self._grafica_direcciones_lista.get() or "")
+            direcciones = [d.strip() for d in raw_dirs.split(",") if d.strip()]
+
+        prefer_dir = (self._grafica_direccion.get() or "").strip() if hasattr(self, "_grafica_direccion") else ""
+
+        joints = []
+        if hasattr(self, "_joint_lista"):
+            raw_joints = (self._joint_lista.get() or "")
+            joints = [j.strip() for j in raw_joints.split(",") if j.strip()]
+
+        try:
+            tablas = extraer_tablas_etabs(
+                self.sap_model,
+                tablas=["Joint Drifts"],
+                carpeta_destino=None,
+                casos=casos,
+                combinaciones=combos,
+                debug_log=False,
+            )
+        except Exception as exc:  # pragma: no cover - interaccion COM
+            messagebox.showerror("Error", f"No se pudo leer la tabla para graficar:\n{exc}")
+            return
+
+        try:
+            ax = plot_joint_drifts(
+                tablas,
+                table_name="Joint Drifts",
+                joints=joints or None,
+                directions=direcciones or None,
+                prefer_direction=prefer_dir or None,
+                value_candidates=["DriftX", "DriftY", "Drift"],
+                cases=list(casos) + list(combos),
+                grayscale=bool(self._grafica_grises.get()) if hasattr(self, "_grafica_grises") else False,
+                title="Joint Drifts",
+                xlabel="Drift, Unitless",
+                show=True,
+                block=False,
+                interactive_controls=True,
+            )
+            self._raise_matplotlib_window(ax)
+        except Exception as exc:
+            messagebox.showerror("Error al graficar", f"No se pudo generar la grafica:\n{exc}")
+            return
 
     def _graficar_generico(self, opcion: str) -> None:
         """Graficador genГ©rico para tablas tipo Story."""
@@ -711,7 +796,7 @@ class _ExtractorGUI:
 
         try:
             if opcion == "story_forces":
-                plot_story_columns(
+                ax1 = plot_story_columns(
                     tablas,
                     table_name=config["tabla"],
                     value_candidates=["V2", "V3", "VX", "VY"],
@@ -724,7 +809,7 @@ class _ExtractorGUI:
                     show=True,
                     block=False,
                 )
-                plot_story_columns(
+                ax2 = plot_story_columns(
                     tablas,
                     table_name=config["tabla"],
                     value_candidates=["M2", "M3", "MX", "MY"],
@@ -737,8 +822,10 @@ class _ExtractorGUI:
                     show=True,
                     block=False,
                 )
+                self._raise_matplotlib_window(ax1)
+                self._raise_matplotlib_window(ax2)
             else:
-                plot_story_columns(
+                ax = plot_story_columns(
                     tablas,
                     table_name=config["tabla"],
                     value_candidates=config["candidatos"],
@@ -751,11 +838,25 @@ class _ExtractorGUI:
                     show=True,
                     block=False,
                 )
+                self._raise_matplotlib_window(ax)
         except Exception as exc:
             messagebox.showerror("Error al graficar", f"No se pudo generar la grГЎfica:\n{exc}")
             return
 
         messagebox.showinfo("Listo", "La grГЎfica se abriГі en la ventana de Matplotlib.")
+
+    def _raise_matplotlib_window(self, ax) -> None:
+        """Intenta traer al frente la ventana de Matplotlib cuando se usa backend Tk."""
+        try:
+            fig = ax.figure if ax is not None else None
+            manager = fig.canvas.manager if fig else None
+            win = getattr(manager, "window", None)
+            if win and hasattr(win, "attributes"):
+                win.attributes("-topmost", True)
+                win.after(250, lambda: win.attributes("-topmost", False))
+        except Exception:
+            # No interrumpir la experiencia de usuario si falla el raise.
+            pass
 
     def run(self) -> None:
         self.root.mainloop()

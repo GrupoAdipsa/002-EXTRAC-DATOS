@@ -1,0 +1,398 @@
+Story,OutputCase,CaseType,StepType,StepNumber,Direction,Drift,Drift/,Label,X,Y,Z
+Story18,Ex,LinStatic,Step By Step,1,X,0.002573,1/389,43,32,32,55.5
+Story18,Ex,LinStatic,Step By Step,2,X,0.002593,1/386,43,32,32,55.5
+Story18,Ex,LinStatic,Step By Step,3,X,0.002565,1/390,39,32,0,55.5
+Story18,Ey,LinStatic,Step By Step,1,Y,0.002841,1/352,23,0,32,55.5
+Story18,Ey,LinStatic,Step By Step,2,Y,0.002801,1/357,23,0,32,55.5
+Story18,Ey,LinStatic,Step By Step,3,Y,0.002881,1/347,23,0,32,55.5
+Story18,Qx,LinRespSpec,Max,,X,0.001823,1/549,43,32,32,55.5
+Story18,Qy,LinRespSpec,Max,,X,0.000323,1/3098,181,64,32,55.5
+Story18,Qy,LinRespSpec,Max,,Y,0.001527,1/655,23,0,32,55.5
+Story18,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001097,1/911,43,32,32,55.5
+Story18,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000183,1/5458,181,64,32,55.5
+Story18,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.000867,1/1153,23,0,32,55.5
+Story18,EU-F,Combination,Max,,X,0.00288,1/347,43,32,32,55.5
+Story18,EU-F,Combination,Max,,Y,0.002358,1/424,23,0,32,55.5
+Story18,EU-F,Combination,Min,,X,0.002872,1/348,43,32,32,55.5
+Story18,EU-F,Combination,Min,,Y,0.002366,1/423,23,0,32,55.5
+Story18,ES-F,Combination,Max,,X,0.002018,1/496,43,32,32,55.5
+Story18,ES-F,Combination,Max,,Y,0.001651,1/606,23,0,32,55.5
+Story18,ES-F,Combination,Min,,X,0.002012,1/497,43,32,32,55.5
+Story18,ES-F,Combination,Min,,Y,0.001658,1/603,23,0,32,55.5
+Story17,Ex,LinStatic,Step By Step,1,X,0.002655,1/377,176,56,32,52.5
+Story17,Ex,LinStatic,Step By Step,2,X,0.002682,1/373,176,56,32,52.5
+Story17,Ex,LinStatic,Step By Step,3,X,0.002672,1/374,172,56,0,52.5
+Story17,Ey,LinStatic,Step By Step,1,Y,0.002854,1/350,179,64,16,52.5
+Story17,Ey,LinStatic,Step By Step,2,Y,0.002912,1/343,179,64,16,52.5
+Story17,Ey,LinStatic,Step By Step,3,Y,0.0028,1/357,62,48,16,52.5
+Story17,Qx,LinRespSpec,Max,,X,0.001904,1/525,176,56,32,52.5
+Story17,Qx,LinRespSpec,Max,,Y,0.000269,1/3716,179,64,16,52.5
+Story17,Qy,LinRespSpec,Max,,X,0.000397,1/2518,181,64,32,52.5
+Story17,Qy,LinRespSpec,Max,,Y,0.001563,1/640,23,0,32,52.5
+Story17,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001146,1/873,176,56,32,52.5
+Story17,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000162,1/6173,179,64,16,52.5
+Story17,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000225,1/4436,181,64,32,52.5
+Story17,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.000887,1/1127,23,0,32,52.5
+Story17,EU-F,Combination,Max,,X,0.003044,1/329,181,64,32,52.5
+Story17,EU-F,Combination,Max,,Y,0.002416,1/414,23,0,32,52.5
+Story17,EU-F,Combination,Min,,X,0.003029,1/330,176,56,32,52.5
+Story17,EU-F,Combination,Min,,Y,0.002425,1/412,23,0,32,52.5
+Story17,ES-F,Combination,Max,,X,0.002134,1/469,181,64,32,52.5
+Story17,ES-F,Combination,Max,,Y,0.001692,1/591,23,0,32,52.5
+Story17,ES-F,Combination,Min,,X,0.002123,1/471,176,56,32,52.5
+Story17,ES-F,Combination,Min,,Y,0.001699,1/589,23,0,32,52.5
+Story16,Ex,LinStatic,Step By Step,1,X,0.002707,1/369,177,64,0,49.5
+Story16,Ex,LinStatic,Step By Step,2,X,0.002731,1/366,181,64,32,49.5
+Story16,Ex,LinStatic,Step By Step,3,X,0.002742,1/365,177,64,0,49.5
+Story16,Ey,LinStatic,Step By Step,1,Y,0.003422,1/292,181,64,32,49.5
+Story16,Ey,LinStatic,Step By Step,2,Y,0.003508,1/285,181,64,32,49.5
+Story16,Ey,LinStatic,Step By Step,3,Y,0.003336,1/300,181,64,32,49.5
+Story16,Qx,LinRespSpec,Max,,X,0.001946,1/514,181,64,32,49.5
+Story16,Qx,LinRespSpec,Max,,Y,0.000313,1/3197,181,64,32,49.5
+Story16,Qy,LinRespSpec,Max,,X,0.000509,1/1965,172,56,0,49.5
+Story16,Qy,LinRespSpec,Max,,Y,0.001831,1/546,181,64,32,49.5
+Story16,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001171,1/854,181,64,32,49.5
+Story16,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000188,1/5311,181,64,32,49.5
+Story16,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000289,1/3462,172,56,0,49.5
+Story16,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001039,1/962,181,64,32,49.5
+Story16,EU-F,Combination,Max,,X,0.00315,1/318,181,64,32,49.5
+Story16,EU-F,Combination,Max,,Y,0.002886,1/346,177,64,0,49.5
+Story16,EU-F,Combination,Min,,X,0.003143,1/318,181,64,32,49.5
+Story16,EU-F,Combination,Min,,Y,0.00289,1/346,181,64,32,49.5
+Story16,ES-F,Combination,Max,,X,0.002208,1/453,181,64,32,49.5
+Story16,ES-F,Combination,Max,,Y,0.002022,1/495,177,64,0,49.5
+Story16,ES-F,Combination,Min,,X,0.002203,1/454,181,64,32,49.5
+Story16,ES-F,Combination,Min,,Y,0.002025,1/494,181,64,32,49.5
+Story15,Ex,LinStatic,Step By Step,1,X,0.002768,1/361,172,56,0,46.5
+Story15,Ex,LinStatic,Step By Step,2,X,0.002781,1/360,176,56,32,46.5
+Story15,Ex,LinStatic,Step By Step,3,X,0.002814,1/355,172,56,0,46.5
+Story15,Ey,LinStatic,Step By Step,1,Y,0.003951,1/253,180,64,24,46.5
+Story15,Ey,LinStatic,Step By Step,2,Y,0.004064,1/246,180,64,24,46.5
+Story15,Ey,LinStatic,Step By Step,3,Y,0.003838,1/261,180,64,24,46.5
+Story15,Qx,LinRespSpec,Max,,X,0.001973,1/507,181,64,32,46.5
+Story15,Qx,LinRespSpec,Max,,Y,0.000331,1/3025,177,64,0,46.5
+Story15,Qy,LinRespSpec,Max,,X,0.000641,1/1561,177,64,0,46.5
+Story15,Qy,LinRespSpec,Max,,Y,0.002168,1/461,180,64,24,46.5
+Story15,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001188,1/842,181,64,32,46.5
+Story15,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000199,1/5024,177,64,0,46.5
+Story15,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000364,1/2749,177,64,0,46.5
+Story15,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001231,1/813,180,64,24,46.5
+Story15,EU-F,Combination,Max,,X,0.00324,1/309,181,64,32,46.5
+Story15,EU-F,Combination,Max,,Y,0.003399,1/294,181,64,32,46.5
+Story15,EU-F,Combination,Min,,X,0.003235,1/309,181,64,32,46.5
+Story15,EU-F,Combination,Min,,Y,0.003402,1/294,177,64,0,46.5
+Story15,ES-F,Combination,Max,,X,0.002272,1/440,181,64,32,46.5
+Story15,ES-F,Combination,Max,,Y,0.002381,1/420,181,64,32,46.5
+Story15,ES-F,Combination,Min,,X,0.002267,1/441,181,64,32,46.5
+Story15,ES-F,Combination,Min,,Y,0.002383,1/420,177,64,0,46.5
+Story14,Ex,LinStatic,Step By Step,1,X,0.002824,1/354,177,64,0,43.5
+Story14,Ex,LinStatic,Step By Step,2,X,0.002826,1/354,181,64,32,43.5
+Story14,Ex,LinStatic,Step By Step,3,X,0.002879,1/347,177,64,0,43.5
+Story14,Ey,LinStatic,Step By Step,1,Y,0.004435,1/225,181,64,32,43.5
+Story14,Ey,LinStatic,Step By Step,2,Y,0.004574,1/219,181,64,32,43.5
+Story14,Ey,LinStatic,Step By Step,3,Y,0.004297,1/233,181,64,32,43.5
+Story14,Qx,LinRespSpec,Max,,X,0.001983,1/504,181,64,32,43.5
+Story14,Qx,LinRespSpec,Max,,Y,0.000326,1/3071,177,64,0,43.5
+Story14,Qy,LinRespSpec,Max,,X,0.000761,1/1314,177,64,0,43.5
+Story14,Qy,LinRespSpec,Max,,Y,0.002482,1/403,181,64,32,43.5
+Story14,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001194,1/838,181,64,32,43.5
+Story14,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000196,1/5102,177,64,0,43.5
+Story14,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000432,1/2314,177,64,0,43.5
+Story14,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001409,1/710,181,64,32,43.5
+Story14,EU-F,Combination,Max,,X,0.003313,1/302,177,64,0,43.5
+Story14,EU-F,Combination,Max,,Y,0.003869,1/258,177,64,0,43.5
+Story14,EU-F,Combination,Min,,X,0.003306,1/302,177,64,0,43.5
+Story14,EU-F,Combination,Min,,Y,0.003871,1/258,181,64,32,43.5
+Story14,ES-F,Combination,Max,,X,0.002324,1/430,177,64,0,43.5
+Story14,ES-F,Combination,Max,,Y,0.00271,1/369,177,64,0,43.5
+Story14,ES-F,Combination,Min,,X,0.002318,1/431,177,64,0,43.5
+Story14,ES-F,Combination,Min,,Y,0.002711,1/369,181,64,32,43.5
+Story13,Ex,LinStatic,Step By Step,1,X,0.002866,1/349,177,64,0,40.5
+Story13,Ex,LinStatic,Step By Step,2,X,0.002858,1/350,181,64,32,40.5
+Story13,Ex,LinStatic,Step By Step,3,X,0.00293,1/341,177,64,0,40.5
+Story13,Ey,LinStatic,Step By Step,1,Y,0.004872,1/205,181,64,32,40.5
+Story13,Ey,LinStatic,Step By Step,2,Y,0.005034,1/199,181,64,32,40.5
+Story13,Ey,LinStatic,Step By Step,3,Y,0.00471,1/212,181,64,32,40.5
+Story13,Qx,LinRespSpec,Max,,X,0.001984,1/504,177,64,0,40.5
+Story13,Qx,LinRespSpec,Max,,Y,0.000308,1/3251,177,64,0,40.5
+Story13,Qy,LinRespSpec,Max,,X,0.00086,1/1162,177,64,0,40.5
+Story13,Qy,LinRespSpec,Max,,Y,0.002752,1/363,181,64,32,40.5
+Story13,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001194,1/837,177,64,0,40.5
+Story13,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000185,1/5400,177,64,0,40.5
+Story13,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000488,1/2048,177,64,0,40.5
+Story13,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001562,1/640,181,64,32,40.5
+Story13,EU-F,Combination,Max,,X,0.003367,1/297,177,64,0,40.5
+Story13,EU-F,Combination,Max,,Y,0.004267,1/234,177,64,0,40.5
+Story13,EU-F,Combination,Min,,X,0.00336,1/298,177,64,0,40.5
+Story13,EU-F,Combination,Min,,Y,0.004267,1/234,181,64,32,40.5
+Story13,ES-F,Combination,Max,,X,0.002362,1/423,177,64,0,40.5
+Story13,ES-F,Combination,Max,,Y,0.002988,1/335,177,64,0,40.5
+Story13,ES-F,Combination,Min,,X,0.002356,1/424,177,64,0,40.5
+Story13,ES-F,Combination,Min,,Y,0.002989,1/335,181,64,32,40.5
+Story12,Ex,LinStatic,Step By Step,1,X,0.002891,1/346,177,64,0,37.5
+Story12,Ex,LinStatic,Step By Step,2,X,0.002874,1/348,181,64,32,37.5
+Story12,Ex,LinStatic,Step By Step,3,X,0.002962,1/338,177,64,0,37.5
+Story12,Ey,LinStatic,Step By Step,1,Y,0.005259,1/190,181,64,32,37.5
+Story12,Ey,LinStatic,Step By Step,2,Y,0.005442,1/184,181,64,32,37.5
+Story12,Ey,LinStatic,Step By Step,3,Y,0.005075,1/197,181,64,32,37.5
+Story12,Qx,LinRespSpec,Max,,X,0.001975,1/506,177,64,0,37.5
+Story12,Qx,LinRespSpec,Max,,Y,0.000295,1/3391,177,64,0,37.5
+Story12,Qy,LinRespSpec,Max,,X,0.00093,1/1075,177,64,0,37.5
+Story12,Qy,LinRespSpec,Max,,Y,0.002956,1/338,181,64,32,37.5
+Story12,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001189,1/841,177,64,0,37.5
+Story12,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000178,1/5633,177,64,0,37.5
+Story12,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000528,1/1894,177,64,0,37.5
+Story12,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001678,1/596,181,64,32,37.5
+Story12,EU-F,Combination,Max,,X,0.003384,1/295,177,64,0,37.5
+Story12,EU-F,Combination,Max,,Y,0.004567,1/219,177,64,0,37.5
+Story12,EU-F,Combination,Min,,X,0.003378,1/296,177,64,0,37.5
+Story12,EU-F,Combination,Min,,Y,0.004567,1/219,181,64,32,37.5
+Story12,ES-F,Combination,Max,,X,0.002374,1/421,177,64,0,37.5
+Story12,ES-F,Combination,Max,,Y,0.003199,1/313,177,64,0,37.5
+Story12,ES-F,Combination,Min,,X,0.002369,1/422,177,64,0,37.5
+Story12,ES-F,Combination,Min,,Y,0.003198,1/313,181,64,32,37.5
+Story11,Ex,LinStatic,Step By Step,1,X,0.002895,1/345,177,64,0,34.5
+Story11,Ex,LinStatic,Step By Step,2,X,0.002869,1/349,181,64,32,34.5
+Story11,Ex,LinStatic,Step By Step,3,X,0.002972,1/336,177,64,0,34.5
+Story11,Ey,LinStatic,Step By Step,1,Y,0.005594,1/179,181,64,32,34.5
+Story11,Ey,LinStatic,Step By Step,2,Y,0.005796,1/173,181,64,32,34.5
+Story11,Ey,LinStatic,Step By Step,3,Y,0.005392,1/185,181,64,32,34.5
+Story11,Qx,LinRespSpec,Max,,X,0.001951,1/512,177,64,0,34.5
+Story11,Qx,LinRespSpec,Max,,Y,0.000302,1/3309,177,64,0,34.5
+Story11,Qy,LinRespSpec,Max,,X,0.000972,1/1029,177,64,0,34.5
+Story11,Qy,LinRespSpec,Max,,Y,0.003093,1/323,181,64,32,34.5
+Story11,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001175,1/851,177,64,0,34.5
+Story11,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000182,1/5496,177,64,0,34.5
+Story11,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000552,1/1812,177,64,0,34.5
+Story11,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001756,1/570,181,64,32,34.5
+Story11,EU-F,Combination,Max,,X,0.003368,1/297,177,64,0,34.5
+Story11,EU-F,Combination,Max,,Y,0.004777,1/209,177,64,0,34.5
+Story11,EU-F,Combination,Min,,X,0.003362,1/297,177,64,0,34.5
+Story11,EU-F,Combination,Min,,Y,0.004774,1/209,181,64,32,34.5
+Story11,ES-F,Combination,Max,,X,0.002363,1/423,177,64,0,34.5
+Story11,ES-F,Combination,Max,,Y,0.003345,1/299,177,64,0,34.5
+Story11,ES-F,Combination,Min,,X,0.002359,1/424,177,64,0,34.5
+Story11,ES-F,Combination,Min,,Y,0.003344,1/299,181,64,32,34.5
+Story10,Ex,LinStatic,Step By Step,1,X,0.002874,1/348,177,64,0,31.5
+Story10,Ex,LinStatic,Step By Step,2,X,0.00284,1/352,181,64,32,31.5
+Story10,Ex,LinStatic,Step By Step,3,X,0.002958,1/338,177,64,0,31.5
+Story10,Ey,LinStatic,Step By Step,1,Y,0.005878,1/170,181,64,32,31.5
+Story10,Ey,LinStatic,Step By Step,2,Y,0.006097,1/164,181,64,32,31.5
+Story10,Ey,LinStatic,Step By Step,3,Y,0.005658,1/177,181,64,32,31.5
+Story10,Qx,LinRespSpec,Max,,X,0.001915,1/522,177,64,0,31.5
+Story10,Qx,LinRespSpec,Max,,Y,0.000324,1/3086,177,64,0,31.5
+Story10,Qy,LinRespSpec,Max,,X,0.001,1/1000,177,64,0,31.5
+Story10,Qy,LinRespSpec,Max,,Y,0.003186,1/314,181,64,32,31.5
+Story10,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001153,1/867,177,64,0,31.5
+Story10,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000195,1/5126,177,64,0,31.5
+Story10,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000567,1/1762,177,64,0,31.5
+Story10,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001809,1/553,181,64,32,31.5
+Story10,EU-F,Combination,Max,,X,0.003326,1/301,177,64,0,31.5
+Story10,EU-F,Combination,Max,,Y,0.004927,1/203,177,64,0,31.5
+Story10,EU-F,Combination,Min,,X,0.003321,1/301,177,64,0,31.5
+Story10,EU-F,Combination,Min,,Y,0.004923,1/203,181,64,32,31.5
+Story10,ES-F,Combination,Max,,X,0.002333,1/429,177,64,0,31.5
+Story10,ES-F,Combination,Max,,Y,0.003451,1/290,177,64,0,31.5
+Story10,ES-F,Combination,Min,,X,0.00233,1/429,177,64,0,31.5
+Story10,ES-F,Combination,Min,,Y,0.003448,1/290,181,64,32,31.5
+Story9,Ex,LinStatic,Step By Step,1,X,0.002825,1/354,177,64,0,28.5
+Story9,Ex,LinStatic,Step By Step,2,X,0.002784,1/359,181,64,32,28.5
+Story9,Ex,LinStatic,Step By Step,3,X,0.002914,1/343,177,64,0,28.5
+Story9,Ey,LinStatic,Step By Step,1,Y,0.006109,1/164,181,64,32,28.5
+Story9,Ey,LinStatic,Step By Step,2,Y,0.006344,1/158,181,64,32,28.5
+Story9,Ey,LinStatic,Step By Step,3,Y,0.005874,1/170,181,64,32,28.5
+Story9,Qx,LinRespSpec,Max,,X,0.001868,1/535,177,64,0,28.5
+Story9,Qx,LinRespSpec,Max,,Y,0.000347,1/2878,181,64,32,28.5
+Story9,Qy,LinRespSpec,Max,,X,0.001028,1/973,177,64,0,28.5
+Story9,Qy,LinRespSpec,Max,,Y,0.003266,1/306,181,64,32,28.5
+Story9,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001125,1/889,177,64,0,28.5
+Story9,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000209,1/4780,181,64,32,28.5
+Story9,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000583,1/1714,177,64,0,28.5
+Story9,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001854,1/539,181,64,32,28.5
+Story9,EU-F,Combination,Max,,X,0.003267,1/306,177,64,0,28.5
+Story9,EU-F,Combination,Max,,Y,0.00506,1/198,181,64,32,28.5
+Story9,EU-F,Combination,Min,,X,0.003263,1/306,177,64,0,28.5
+Story9,EU-F,Combination,Min,,Y,0.005053,1/198,177,64,0,28.5
+Story9,ES-F,Combination,Max,,X,0.002292,1/436,177,64,0,28.5
+Story9,ES-F,Combination,Max,,Y,0.003544,1/282,181,64,32,28.5
+Story9,ES-F,Combination,Min,,X,0.00229,1/437,177,64,0,28.5
+Story9,ES-F,Combination,Min,,Y,0.003539,1/283,177,64,0,28.5
+Story8,Ex,LinStatic,Step By Step,1,X,0.002745,1/364,177,64,0,25.5
+Story8,Ex,LinStatic,Step By Step,2,X,0.002697,1/371,181,64,32,25.5
+Story8,Ex,LinStatic,Step By Step,3,X,0.002839,1/352,177,64,0,25.5
+Story8,Ey,LinStatic,Step By Step,1,Y,0.00629,1/159,179,64,16,25.5
+Story8,Ey,LinStatic,Step By Step,2,Y,0.006539,1/153,179,64,16,25.5
+Story8,Ey,LinStatic,Step By Step,3,Y,0.006041,1/166,179,64,16,25.5
+Story8,Qx,LinRespSpec,Max,,X,0.001812,1/552,177,64,0,25.5
+Story8,Qx,LinRespSpec,Max,,Y,0.000366,1/2730,177,64,0,25.5
+Story8,Qy,LinRespSpec,Max,,X,0.001066,1/938,177,64,0,25.5
+Story8,Qy,LinRespSpec,Max,,Y,0.003354,1/298,181,64,32,25.5
+Story8,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001091,1/917,177,64,0,25.5
+Story8,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000221,1/4534,177,64,0,25.5
+Story8,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000605,1/1653,177,64,0,25.5
+Story8,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001904,1/525,181,64,32,25.5
+Story8,EU-F,Combination,Max,,X,0.0032,1/313,54,48,0,25.5
+Story8,EU-F,Combination,Max,,Y,0.005202,1/192,177,64,0,25.5
+Story8,EU-F,Combination,Min,,X,0.003197,1/313,177,64,0,25.5
+Story8,EU-F,Combination,Min,,Y,0.005193,1/193,181,64,32,25.5
+Story8,ES-F,Combination,Max,,X,0.002245,1/445,54,48,0,25.5
+Story8,ES-F,Combination,Max,,Y,0.003644,1/274,177,64,0,25.5
+Story8,ES-F,Combination,Min,,X,0.002243,1/446,177,64,0,25.5
+Story8,ES-F,Combination,Min,,Y,0.003637,1/275,181,64,32,25.5
+Story7,Ex,LinStatic,Step By Step,1,X,0.002632,1/380,39,32,0,22.5
+Story7,Ex,LinStatic,Step By Step,2,X,0.002576,1/388,43,32,32,22.5
+Story7,Ex,LinStatic,Step By Step,3,X,0.00273,1/366,39,32,0,22.5
+Story7,Ey,LinStatic,Step By Step,1,Y,0.006424,1/156,179,64,16,22.5
+Story7,Ey,LinStatic,Step By Step,2,Y,0.006685,1/150,179,64,16,22.5
+Story7,Ey,LinStatic,Step By Step,3,Y,0.006163,1/162,179,64,16,22.5
+Story7,Qx,LinRespSpec,Max,,X,0.001748,1/572,177,64,0,22.5
+Story7,Qx,LinRespSpec,Max,,Y,0.000379,1/2636,177,64,0,22.5
+Story7,Qy,LinRespSpec,Max,,X,0.001116,1/896,172,56,0,22.5
+Story7,Qy,LinRespSpec,Max,,Y,0.003459,1/289,180,64,24,22.5
+Story7,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001052,1/950,177,64,0,22.5
+Story7,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000228,1/4378,177,64,0,22.5
+Story7,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000633,1/1579,172,56,0,22.5
+Story7,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.001964,1/509,180,64,24,22.5
+Story7,EU-F,Combination,Max,,X,0.003132,1/319,177,64,0,22.5
+Story7,EU-F,Combination,Max,,Y,0.005371,1/186,181,64,32,22.5
+Story7,EU-F,Combination,Min,,X,0.003123,1/320,39,32,0,22.5
+Story7,EU-F,Combination,Min,,Y,0.005358,1/187,177,64,0,22.5
+Story7,ES-F,Combination,Max,,X,0.002198,1/455,177,64,0,22.5
+Story7,ES-F,Combination,Max,,Y,0.003763,1/266,181,64,32,22.5
+Story7,ES-F,Combination,Min,,X,0.002192,1/456,39,32,0,22.5
+Story7,ES-F,Combination,Min,,Y,0.003753,1/266,177,64,0,22.5
+Story6,Ex,LinStatic,Step By Step,1,X,0.002483,1/403,39,32,0,19.5
+Story6,Ex,LinStatic,Step By Step,2,X,0.002421,1/413,43,32,32,19.5
+Story6,Ex,LinStatic,Step By Step,3,X,0.002585,1/387,39,32,0,19.5
+Story6,Ey,LinStatic,Step By Step,1,Y,0.006528,1/153,177,64,0,19.5
+Story6,Ey,LinStatic,Step By Step,2,Y,0.006801,1/147,177,64,0,19.5
+Story6,Ey,LinStatic,Step By Step,3,Y,0.006254,1/160,177,64,0,19.5
+Story6,Qx,LinRespSpec,Max,,X,0.001676,1/597,39,32,0,19.5
+Story6,Qx,LinRespSpec,Max,,Y,0.000392,1/2551,181,64,32,19.5
+Story6,Qy,LinRespSpec,Max,,X,0.001182,1/846,177,64,0,19.5
+Story6,Qy,LinRespSpec,Max,,Y,0.003607,1/277,177,64,0,19.5
+Story6,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.001009,1/991,39,32,0,19.5
+Story6,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000236,1/4237,181,64,32,19.5
+Story6,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000671,1/1490,177,64,0,19.5
+Story6,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.002047,1/488,177,64,0,19.5
+Story6,EU-F,Combination,Max,,X,0.003046,1/328,39,32,0,19.5
+Story6,EU-F,Combination,Max,,Y,0.005599,1/179,177,64,0,19.5
+Story6,EU-F,Combination,Min,,X,0.003052,1/328,177,64,0,19.5
+Story6,EU-F,Combination,Min,,Y,0.005583,1/179,181,64,32,19.5
+Story6,ES-F,Combination,Max,,X,0.002138,1/468,39,32,0,19.5
+Story6,ES-F,Combination,Max,,Y,0.003922,1/255,177,64,0,19.5
+Story6,ES-F,Combination,Min,,X,0.002142,1/467,177,64,0,19.5
+Story6,ES-F,Combination,Min,,Y,0.00391,1/256,181,64,32,19.5
+Story5,Ex,LinStatic,Step By Step,1,X,0.002301,1/435,177,64,0,16.5
+Story5,Ex,LinStatic,Step By Step,2,X,0.002232,1/448,181,64,32,16.5
+Story5,Ex,LinStatic,Step By Step,3,X,0.002407,1/416,177,64,0,16.5
+Story5,Ey,LinStatic,Step By Step,1,Y,0.006618,1/151,179,64,16,16.5
+Story5,Ey,LinStatic,Step By Step,2,Y,0.006903,1/145,179,64,16,16.5
+Story5,Ey,LinStatic,Step By Step,3,Y,0.006332,1/158,179,64,16,16.5
+Story5,Qx,LinRespSpec,Max,,X,0.001604,1/623,177,64,0,16.5
+Story5,Qx,LinRespSpec,Max,,Y,0.000421,1/2377,180,64,24,16.5
+Story5,Qy,LinRespSpec,Max,,X,0.001277,1/783,54,48,0,16.5
+Story5,Qy,LinRespSpec,Max,,Y,0.003839,1/260,179,64,16,16.5
+Story5,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.000966,1/1036,177,64,0,16.5
+Story5,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000253,1/3949,180,64,24,16.5
+Story5,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000725,1/1379,54,48,0,16.5
+Story5,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.002179,1/459,179,64,16,16.5
+Story5,EU-F,Combination,Max,,X,0.002978,1/336,54,48,0,16.5
+Story5,EU-F,Combination,Max,,Y,0.005962,1/168,177,64,0,16.5
+Story5,EU-F,Combination,Min,,X,0.002987,1/335,177,64,0,16.5
+Story5,EU-F,Combination,Min,,Y,0.005943,1/168,181,64,32,16.5
+Story5,ES-F,Combination,Max,,X,0.002091,1/478,54,48,0,16.5
+Story5,ES-F,Combination,Max,,Y,0.004177,1/239,177,64,0,16.5
+Story5,ES-F,Combination,Min,,X,0.002098,1/477,177,64,0,16.5
+Story5,ES-F,Combination,Min,,Y,0.004162,1/240,181,64,32,16.5
+Story4,Ex,LinStatic,Step By Step,1,X,0.00207,1/483,177,64,0,13.5
+Story4,Ex,LinStatic,Step By Step,2,X,0.001996,1/501,181,64,32,13.5
+Story4,Ex,LinStatic,Step By Step,3,X,0.002178,1/459,177,64,0,13.5
+Story4,Ey,LinStatic,Step By Step,1,Y,0.006619,1/151,177,64,0,13.5
+Story4,Ey,LinStatic,Step By Step,2,Y,0.006913,1/145,177,64,0,13.5
+Story4,Ey,LinStatic,Step By Step,3,Y,0.006324,1/158,177,64,0,13.5
+Story4,Qx,LinRespSpec,Max,,X,0.001495,1/669,177,64,0,13.5
+Story4,Qx,LinRespSpec,Max,,Y,0.000457,1/2190,177,64,0,13.5
+Story4,Qy,LinRespSpec,Max,,X,0.001364,1/733,54,48,0,13.5
+Story4,Qy,LinRespSpec,Max,,Y,0.004056,1/247,177,64,0,13.5
+Story4,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.0009,1/1111,177,64,0,13.5
+Story4,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000275,1/3638,177,64,0,13.5
+Story4,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000774,1/1292,54,48,0,13.5
+Story4,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.002303,1/434,177,64,0,13.5
+Story4,EU-F,Combination,Max,,X,0.002862,1/349,177,64,0,13.5
+Story4,EU-F,Combination,Max,,Y,0.006307,1/159,181,64,32,13.5
+Story4,EU-F,Combination,Min,,X,0.002854,1/350,172,56,0,13.5
+Story4,EU-F,Combination,Min,,Y,0.006285,1/159,177,64,0,13.5
+Story4,ES-F,Combination,Max,,X,0.00201,1/498,177,64,0,13.5
+Story4,ES-F,Combination,Max,,Y,0.004419,1/226,181,64,32,13.5
+Story4,ES-F,Combination,Min,,X,0.002005,1/499,172,56,0,13.5
+Story4,ES-F,Combination,Min,,Y,0.004402,1/227,177,64,0,13.5
+Story3,Ex,LinStatic,Step By Step,1,X,0.001766,1/566,39,32,0,10.5
+Story3,Ex,LinStatic,Step By Step,2,X,0.001697,1/589,43,32,32,10.5
+Story3,Ex,LinStatic,Step By Step,3,X,0.001877,1/533,39,32,0,10.5
+Story3,Ey,LinStatic,Step By Step,1,Y,0.006567,1/152,179,64,16,10.5
+Story3,Ey,LinStatic,Step By Step,2,Y,0.00687,1/146,179,64,16,10.5
+Story3,Ey,LinStatic,Step By Step,3,Y,0.006264,1/160,179,64,16,10.5
+Story3,Qx,LinRespSpec,Max,,X,0.001327,1/754,39,32,0,10.5
+Story3,Qx,LinRespSpec,Max,,Y,0.000483,1/2070,179,64,16,10.5
+Story3,Qy,LinRespSpec,Max,,X,0.001446,1/692,39,32,0,10.5
+Story3,Qy,LinRespSpec,Max,,Y,0.004253,1/235,179,64,16,10.5
+Story3,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.000799,1/1252,39,32,0,10.5
+Story3,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000291,1/3439,179,64,16,10.5
+Story3,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000821,1/1218,39,32,0,10.5
+Story3,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.002414,1/414,179,64,16,10.5
+Story3,EU-F,Combination,Max,,X,0.002764,1/362,39,32,0,10.5
+Story3,EU-F,Combination,Max,,Y,0.006609,1/151,179,64,16,10.5
+Story3,EU-F,Combination,Min,,X,0.002768,1/361,39,32,0,10.5
+Story3,EU-F,Combination,Min,,Y,0.00659,1/152,179,64,16,10.5
+Story3,ES-F,Combination,Max,,X,0.001942,1/515,39,32,0,10.5
+Story3,ES-F,Combination,Max,,Y,0.00463,1/216,179,64,16,10.5
+Story3,ES-F,Combination,Min,,X,0.001945,1/514,39,32,0,10.5
+Story3,ES-F,Combination,Min,,Y,0.004615,1/217,179,64,16,10.5
+Story2,Ex,LinStatic,Step By Step,1,X,0.001284,1/779,39,32,0,7.5
+Story2,Ex,LinStatic,Step By Step,2,X,0.001255,1/797,43,32,32,7.5
+Story2,Ex,LinStatic,Step By Step,3,X,0.001399,1/715,39,32,0,7.5
+Story2,Ex,LinStatic,Step By Step,3,Y,0.000514,1/1945,181,64,32,7.5
+Story2,Ey,LinStatic,Step By Step,1,Y,0.006646,1/150,181,64,32,7.5
+Story2,Ey,LinStatic,Step By Step,2,Y,0.006966,1/144,181,64,32,7.5
+Story2,Ey,LinStatic,Step By Step,3,Y,0.006327,1/158,181,64,32,7.5
+Story2,Qx,LinRespSpec,Max,,X,0.00102,1/981,39,32,0,7.5
+Story2,Qx,LinRespSpec,Max,,Y,0.000525,1/1906,177,64,0,7.5
+Story2,Qy,LinRespSpec,Max,,X,0.001554,1/644,39,32,0,7.5
+Story2,Qy,LinRespSpec,Max,,Y,0.004563,1/219,181,64,32,7.5
+Story2,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.000614,1/1629,39,32,0,7.5
+Story2,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000316,1/3166,177,64,0,7.5
+Story2,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.000882,1/1134,39,32,0,7.5
+Story2,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.00259,1/386,181,64,32,7.5
+Story2,EU-F,Combination,Max,,X,0.002789,1/359,39,32,0,7.5
+Story2,EU-F,Combination,Max,,Y,0.007094,1/141,177,64,0,7.5
+Story2,EU-F,Combination,Min,,X,0.00279,1/358,39,32,0,7.5
+Story2,EU-F,Combination,Min,,Y,0.007079,1/141,181,64,32,7.5
+Story2,ES-F,Combination,Max,,X,0.001958,1/511,39,32,0,7.5
+Story2,ES-F,Combination,Max,,Y,0.00497,1/201,177,64,0,7.5
+Story2,ES-F,Combination,Min,,X,0.001958,1/511,39,32,0,7.5
+Story2,ES-F,Combination,Min,,Y,0.004958,1/202,181,64,32,7.5
+Story1,Ex,LinStatic,Step By Step,1,X,0.000674,1/1483,177,64,0,4.5
+Story1,Ex,LinStatic,Step By Step,2,X,0.000701,1/1427,181,64,32,4.5
+Story1,Ex,LinStatic,Step By Step,2,Y,0.00025,1/3995,181,64,32,4.5
+Story1,Ex,LinStatic,Step By Step,3,X,0.000814,1/1228,177,64,0,4.5
+Story1,Ex,LinStatic,Step By Step,3,Y,0.000572,1/1748,177,64,0,4.5
+Story1,Ey,LinStatic,Step By Step,1,Y,0.008147,1/123,178,64,8,4.5
+Story1,Ey,LinStatic,Step By Step,2,Y,0.008557,1/117,178,64,8,4.5
+Story1,Ey,LinStatic,Step By Step,3,Y,0.007737,1/129,178,64,8,4.5
+Story1,Qx,LinRespSpec,Max,,X,0.000689,1/1452,181,64,32,4.5
+Story1,Qx,LinRespSpec,Max,,Y,0.000718,1/1393,181,64,32,4.5
+Story1,Qy,LinRespSpec,Max,,X,0.001967,1/508,172,56,0,4.5
+Story1,Qy,LinRespSpec,Max,,Y,0.005907,1/169,178,64,8,4.5
+Story1,Qx-Servicio (R=6),LinRespSpec,Max,,X,0.000415,1/2412,181,64,32,4.5
+Story1,Qx-Servicio (R=6),LinRespSpec,Max,,Y,0.000432,1/2313,181,64,32,4.5
+Story1,Qy-Servicio (R=6),LinRespSpec,Max,,X,0.001117,1/895,172,56,0,4.5
+Story1,Qy-Servicio (R=6),LinRespSpec,Max,,Y,0.003353,1/298,178,64,8,4.5
+Story1,EU-F,Combination,Max,,X,0.00324,1/309,177,64,0,4.5
+Story1,EU-F,Combination,Max,,Y,0.009189,1/109,181,64,32,4.5
+Story1,EU-F,Combination,Min,,X,0.003229,1/310,172,56,0,4.5
+Story1,EU-F,Combination,Min,,Y,0.009183,1/109,177,64,0,4.5
+Story1,ES-F,Combination,Max,,X,0.002272,1/440,177,64,0,4.5
+Story1,ES-F,Combination,Max,,Y,0.006437,1/155,181,64,32,4.5
+Story1,ES-F,Combination,Min,,X,0.002263,1/442,172,56,0,4.5
+Story1,ES-F,Combination,Min,,Y,0.006432,1/155,177,64,0,4.5

@@ -19,7 +19,7 @@ from tablas_etabs import (
     extraer_tablas_etabs,
     listar_tablas_etabs,
 )
-from graficar_tablas_etabs import plot_max_story_drift, plot_story_columns
+from graficar_tablas_etabs import plot_joint_drifts, plot_max_story_drift, plot_story_columns
 
 __all__ = [
     "DEFAULT_TABLES",
@@ -29,4 +29,5 @@ __all__ = [
     "lanzar_gui_etabs",
     "plot_max_story_drift",
     "plot_story_columns",
+    "plot_joint_drifts",
 ]

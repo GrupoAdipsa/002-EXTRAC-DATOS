@@ -88,6 +88,7 @@ def extraer_tablas_etabs(
     casos: Iterable[str] | None = None,
     combinaciones: Iterable[str] | None = None,
     debug_log: bool = False,
+    permitir_tablas_vacias: bool = False,
 ):
     """Extrae tablas seleccionadas de un modelo abierto de ETABS.
 
